@@ -1,0 +1,4 @@
+CREATE DATABASE simulations;
+CREATE USER orator WITH ENCRYPTED PASSWORD 'orator';
+GRANT ALL PRIVILEGES ON DATABASE simulations TO orator;
+ALTER DATABASE simulations OWNER TO orator;
