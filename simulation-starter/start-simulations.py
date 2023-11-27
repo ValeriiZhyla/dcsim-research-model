@@ -17,9 +17,7 @@ SLURM_OUTPUT_FILE = "slurm-output.txt"
 DCSIM_OUTPUT_FILE = "dcsim-output.txt"
 DCSIM_SIMULATION_RESULT_FILE = "simulation-result.csv"
 SLURM_JOB_FILE = "slurm-job.sh"
-
-# Global variables
-simulations_batch = None
+SLURM_MAX_JOBS = 100
 
 
 def check_arguments(args, parser):
@@ -33,6 +31,8 @@ def check_arguments(args, parser):
         parser.error("dataset_file argument is empty")
     if not (args.simulations_number >= 1):
         parser.error("simulations_number must be >= 1")
+    if not (args.simulations_number <= SLURM_MAX_JOBS):
+        parser.error(f"simulations_number must be <= 100 (you can not fire more than {SLURM_MAX_JOBS} simulations)")
 
 
 def check_files_exist(args):
@@ -187,6 +187,19 @@ class SimulationBatch:
         print(SEPARATOR)
 
 
+def check_squeue(simulations_number: int):
+    print("Checking squeue")
+    result = subprocess.run(["squeue"], capture_output=True, text=True, check=True)
+    active_jobs_number: int = len(result.stdout.strip().split("\n")) - 2
+    print(f"There are [{active_jobs_number}] submitted jobs (max {SLURM_MAX_JOBS})")
+    if simulations_number + active_jobs_number <= SLURM_MAX_JOBS:
+        print(f"=> New jobs can be submitted ({simulations_number} + {active_jobs_number} <= {SLURM_MAX_JOBS})")
+        print(SEPARATOR)
+    else:
+        print(f"=> New jobs can not be submitted ({simulations_number} + {active_jobs_number} = {simulations_number + active_jobs_number} > {SLURM_MAX_JOBS})")
+        exit(1)
+
+
 def main():
     parser = argparse.ArgumentParser(description='This tool generates job description files for slurm and start the simulations.\n'
                                                  'A directory is be prepared for each DCSim simulation, all input files, slurm job input and result file will be saved in this directory.\n'
@@ -202,6 +215,7 @@ def main():
     parser.add_argument('--platform_file', type=str, help='Path to the platform file', required=True)
     parser.add_argument('--workload_file', type=str, help='Path to the workload file', required=True)
     parser.add_argument('--dataset_file', type=str, help='Path to the dataset file', required=True)
+    # TODO later, for phase with 10.000+ simulations: implement target directory where simulations can be accumulated
 
     # Parse the arguments
     args = parser.parse_args()
@@ -215,9 +229,11 @@ def main():
     # Check whether the dc-sim starter exist
     check_dcsim_exist()
 
+    # Check whether there are active jobs in queue
+    check_squeue(args.simulations_number)
+
     # Show simulation parameters
     simulation_hours_minutes_seconds = format_time(args.max_simulation_duration_hours)
-    print(SEPARATOR)
     print(f"Platform file: {args.platform_file}")
     print(f"Workload file: {args.workload_file}")
     print(f"Dataset file: {args.dataset_file}")

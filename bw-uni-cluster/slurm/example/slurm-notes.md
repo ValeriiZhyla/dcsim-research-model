@@ -6,3 +6,5 @@ State: COMPLETED - job OK
 Job ID: can be used as UUID, but is known after simulation
 
 Save submit-job file to database
+
+you can not fire more than 100 simulations
