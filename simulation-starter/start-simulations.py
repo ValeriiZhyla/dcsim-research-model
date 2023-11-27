@@ -58,30 +58,24 @@ def generate_simulation_ids(n):
     uuids = []
     for _ in range(n):
         # Get the current date
-        date_str = datetime.datetime.now().strftime("%Y%m%d")
+        date_str = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         # Generate a unique identifier
         unique_id = f"{date_str}-{uuid.uuid4()}"
         uuids.append(unique_id)
     return uuids
 
 
-def create_simulations_batch_root_directory(batch_id: str):
-    # Path for the new directory
-    home_path = os.path.expanduser("~")
-    full_path = os.path.join(home_path, batch_id)
-    # Create root directory
+def create_simulations_batch_root_directory(simulation_root_directory: str):
     try:
-        os.makedirs(full_path)
-        simulation_root_directory = full_path
-        return simulation_root_directory
+        os.makedirs(simulation_root_directory, exist_ok=True)
     except Exception as e:
         raise IOError(f"Error creating simulation batch root directory: {e}")
 
 
-def generate_batch_id() -> str:
+def default_simulation_root_directory() -> str:
     timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    id = f"{BATCH_PREFIX}_{timestamp}"
-    return id
+    default_root_dir = f"{BATCH_PREFIX}_{timestamp}"
+    return default_root_dir
 
 
 def run_squeue():
@@ -163,12 +157,10 @@ class Simulation:
 
 
 class SimulationBatch:
-    id: str = ""
     simulations: list[Simulation] = []
     root_path: str = ""
 
-    def __init__(self, id: str, simulations: list[Simulation], root_path: str):
-        self.id = id
+    def __init__(self, simulations: list[Simulation], root_path: str):
         self.simulations = simulations
         self.root_path = root_path
 
@@ -203,7 +195,7 @@ def check_squeue(simulations_number: int):
 def main():
     parser = argparse.ArgumentParser(description='This tool generates job description files for slurm and start the simulations.\n'
                                                  'A directory is be prepared for each DCSim simulation, all input files, slurm job input and result file will be saved in this directory.\n'
-                                                 'Each simulation has own uuid, which is used as a directory name. Simulation batch also has an uuid.\n'
+                                                 'Each simulation has own uuid, which is used as a directory name.\n'
                                                  f'Simulation result of DCSim is saved in [{DCSIM_SIMULATION_RESULT_FILE}].\n'
                                                  f'Text output of DCSim is saved in [{DCSIM_OUTPUT_FILE}].\n'
                                                  f'Slurm job description is saved in [{SLURM_JOB_FILE}].\n'
@@ -215,7 +207,8 @@ def main():
     parser.add_argument('--platform_file', type=str, help='Path to the platform file', required=True)
     parser.add_argument('--workload_file', type=str, help='Path to the workload file', required=True)
     parser.add_argument('--dataset_file', type=str, help='Path to the dataset file', required=True)
-    # TODO later, for phase with 10.000+ simulations: implement target directory where simulations can be accumulated
+    parser.add_argument('--simulation_root_dir', type=str,
+                        help='Root directory for simulations. Can be used to accumulate results from many runs. Default directory will be created, if no value provided.')
 
     # Parse the arguments
     args = parser.parse_args()
@@ -242,8 +235,12 @@ def main():
     print(SEPARATOR)
 
     # Create directory for simulation batch
-    batch_id: str = generate_batch_id()
-    batch_root_directory = create_simulations_batch_root_directory(batch_id)
+    if not args.simulation_root_dir:
+        batch_root_directory = default_simulation_root_directory()
+    else:
+        batch_root_directory = args.simulation_root_dir
+    batch_root_directory = os.path.expanduser(batch_root_directory)
+    create_simulations_batch_root_directory(batch_root_directory)
     print(f"Simulation root directory: [{batch_root_directory}]")
 
     # Generate simulation id's with current date and uuid
@@ -252,7 +249,7 @@ def main():
     simulations: list[Simulation] = [Simulation(id, args.platform_file, args.workload_file, args.dataset_file, simulation_hours_minutes_seconds, batch_root_directory) for id in
                                      simulation_uuids]
     # create simulation batch object
-    simulation_batch: SimulationBatch = SimulationBatch(batch_id, simulations, batch_root_directory)
+    simulation_batch: SimulationBatch = SimulationBatch(simulations, batch_root_directory)
 
     # prepare and start simulations
     simulation_batch.prepare_simulations()
