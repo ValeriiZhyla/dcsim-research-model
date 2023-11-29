@@ -258,5 +258,6 @@ def main():
     simulation_directory_names = get_simulation_directories(simulation_root_dir)
     simulation_directories: list[SimulationDirectory] = [create_directory_entity(simulation_root_dir, name) for name in simulation_directory_names]
 
+
 if __name__ == "__main__":
     main()
