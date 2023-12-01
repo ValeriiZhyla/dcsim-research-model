@@ -182,7 +182,9 @@ class SimulationBatch:
 def check_squeue(simulations_number: int):
     print("Checking squeue")
     result = subprocess.run(["squeue"], capture_output=True, text=True, check=True)
-    active_jobs_number: int = len(result.stdout.strip().split("\n")) - 2
+    lines = result.stdout.split("\n")
+    non_empty_lines_count = sum(1 for line in lines if line.strip())
+    active_jobs_number: int = non_empty_lines_count - 1  # without header
     print(f"There are [{active_jobs_number}] submitted jobs (max {SLURM_MAX_JOBS})")
     if simulations_number + active_jobs_number <= SLURM_MAX_JOBS:
         print(f"=> New jobs can be submitted ({simulations_number} + {active_jobs_number} <= {SLURM_MAX_JOBS})")

@@ -342,7 +342,7 @@ def save_to_database_if_not_exist(conn, completed_simulations: list[SimulationDi
 
 
 def main():
-    parser = argparse.ArgumentParser(description='',
+    parser = argparse.ArgumentParser(description='This tool processes the directory with simulations and loads different parts of each simulation into corresponding database tables.',
                                      formatter_class=argparse.RawTextHelpFormatter)
     # Define the expected arguments
     parser.add_argument('--simulation_root_dir', type=str, required=True,
