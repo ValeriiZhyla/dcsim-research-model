@@ -1,4 +1,5 @@
 import argparse
+import csv
 import os.path
 import uuid
 from datetime import datetime
@@ -32,6 +33,7 @@ SLURM_OUTPUT_FILE_MEMORY_PARAMETER = "Memory Utilized:"
 SIMULATION_RESULT_CSV_HEADER = "job.tag, machine.name, hitrate, job.start, job.end, job.computetime, job.flops, infiles.transfertime, infiles.size, outfiles.transfertime, outfiles.size"
 EXPECTED_TIMESTAMP_FORMAT = "%Y%m%d-%H%M%S"
 
+COMPLETED_STATE = "COMPLETED"
 
 def check_arguments(args, parser):
     if not args.simulation_root_dir.strip():
@@ -129,7 +131,7 @@ class SimulationDirectory:
 
     def check_simulation_result_header(self):
         lines = self.simulation_result.split("\n")
-        header = lines[0].split()
+        header = lines[0]
         if not (header == SIMULATION_RESULT_CSV_HEADER):
             raise AttributeError(f"{self.creation_timestamp}-{self.uuid}: simulation_result header: [{header}]. Expected: [{SIMULATION_RESULT_CSV_HEADER}]")
 
@@ -152,6 +154,95 @@ class SimulationDirectory:
         self.check_timestamp()
         self.check_uuid()
         self.check_simulation_result_header()
+
+    def save_in_database_if_not_exist(self, conn):
+        if not self.is_already_in_database(conn):
+            self.save_in_database(conn)
+
+    def is_already_in_database(self, conn):
+        with conn.cursor() as cursor:
+            query = "SELECT 1 FROM simulations WHERE id = %s"
+            cursor.execute(query, (self.uuid,))
+            # Fetch the result
+            result = cursor.fetchone()
+            return result is not None
+
+    def save_in_database(self, conn):
+        try:
+            with conn.cursor() as cursor:
+                # transaction start
+                self.fill_simulations_table(cursor)
+                self.fill_slurm_metadata_table(cursor)
+                self.fill_jobs_table(cursor)
+                # transaction end
+            conn.commit()
+            print(f"Simulation [{self.creation_timestamp}-{self.uuid}] was saved ")
+        except Exception as e:
+            # Perform rollback on any error
+            conn.rollback()
+            print(f"Error during saving the simulation [{self.creation_timestamp}-{self.uuid}]: {e}")
+
+    def fill_simulations_table(self, cursor):
+        insert_simulation_query = """
+                    INSERT INTO simulations (id, seed, platform_config, dataset_config, workload_config, platform_config_name, dataset_config_name, workload_config_name, created_at, simulations_result)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                """
+        # Execute the INSERT statement for the simulations table
+        cursor.execute(insert_simulation_query, (
+            self.uuid,  # Convert string to UUID
+            int(self.simulation_seed),  # Assuming seed is an integer
+            self.platform_file_content,
+            self.dataset_file_content,
+            self.workload_file_content,
+            self.platform_file_name,
+            self.dataset_file_name,
+            self.workload_file_name,
+            datetime.strptime(self.creation_timestamp, "%Y%m%d-%H%M%S"),  # Convert string to timestamp
+            self.simulation_result
+        ))
+
+    def fill_slurm_metadata_table(self, cursor):
+        insert_slurm_metadata_query = """
+                    INSERT INTO slurm_execution_metadata (simulation_id, cpu_time_text, memory_used_text, slurm_output, slurm_job_description)
+                    VALUES (%s, %s, %s, %s, %s);
+                """
+        # Execute the INSERT statement for the slurm_execution_metadata table
+        cursor.execute(insert_slurm_metadata_query, (
+            self.uuid,  # Convert string to UUID
+            self.cpu_time,
+            self.memory,
+            self.slurm_output_file_content,
+            self.slurm_job_file_content
+        ))
+
+    def fill_jobs_table(self, cursor):
+        insert_job_query = """
+                    INSERT INTO simulated_jobs (simulation_id, position_in_batch, tag, machine_name, hit_rate, job_start, job_end, compute_time, flops, input_files_transfer_time, input_files_size, output_files_transfer_time, output_files_size)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                """
+        # Parse the CSV data from simulation_result
+        reader = csv.reader(self.simulation_result.splitlines())
+        next(reader)  # Skip the header row
+        for i, row in enumerate(reader):
+            # Extract fields from the row
+            tag, machine_name, hit_rate, job_start, job_end, compute_time, flops, infiles_transfertime, infiles_size, outfiles_transfertime, outfiles_size = row
+            position_in_batch = i + 1  # position in batch, start with 1, i starts with 0
+            # Execute the INSERT statement for each job
+            cursor.execute(insert_job_query, (
+                self.uuid,  # Convert string to UUID
+                position_in_batch,  # position in batch, start with
+                tag,
+                machine_name,
+                float(hit_rate),
+                float(job_start),
+                float(job_end),
+                float(compute_time),
+                float(flops),
+                float(infiles_transfertime),
+                float(infiles_size),
+                float(outfiles_transfertime),
+                float(outfiles_size)
+            ))
 
 
 def check_expected_files_present(full_dir_path):
@@ -235,6 +326,21 @@ def create_directory_entity(simulation_root_dir, dir_name) -> SimulationDirector
     return simulation_directory
 
 
+def filter_completed_simulations(simulation_directories: list[SimulationDirectory]) -> list[SimulationDirectory]:
+    completed_simulations = []
+    for simulation in simulation_directories:
+        if COMPLETED_STATE in simulation.state:
+            completed_simulations.append(simulation)
+        else:
+            print(f"Warning: simulation [{simulation.creation_timestamp}-{simulation.uuid}] is skipped. Cause: state is not [{COMPLETED_STATE}]. Simulation state: [{simulation.state}] ")
+    return completed_simulations
+
+
+def save_to_database_if_not_exist(conn, completed_simulations: list[SimulationDirectory]):
+    for simulation in completed_simulations:
+        simulation.save_in_database_if_not_exist(conn)
+
+
 def main():
     parser = argparse.ArgumentParser(description='',
                                      formatter_class=argparse.RawTextHelpFormatter)
@@ -257,7 +363,11 @@ def main():
 
     simulation_directory_names = get_simulation_directories(simulation_root_dir)
     simulation_directories: list[SimulationDirectory] = [create_directory_entity(simulation_root_dir, name) for name in simulation_directory_names]
+    completed_simulations: list[SimulationDirectory] = filter_completed_simulations(simulation_directories)
+    save_to_database_if_not_exist(conn, completed_simulations)
 
+    # Close the database connection
+    conn.close()
 
 if __name__ == "__main__":
     main()
