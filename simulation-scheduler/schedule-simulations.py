@@ -122,9 +122,9 @@ def main():
                     print(
                         f"{now()}: Started {simulations_in_one_batch} new simulations. [{total_simulations_number_present(args.directory_to_check)}/{args.total_simulations_number}]")
                 else:
-                    print(f"{now()}: There was a problem starting a batch.")
+                    print(f"{now()}: There was a problem during batch start")
             else:
-                print(f"{now()}: Can not fire new batch now.")
+                print(f"{now()}: Can not fire new batch now")
                 # wait if simulations were not started
                 seconds_to_sleep = args.minutes_between_checks * 60
                 print(f"{now()}: Try to schedule new jobs in [{args.minutes_between_checks}] minute(s)")
