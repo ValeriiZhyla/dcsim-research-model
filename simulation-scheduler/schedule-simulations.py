@@ -108,6 +108,7 @@ def main():
     print(f"simulations_in_one_batch: {simulations_in_one_batch}")
     print(f"total_simulations_number: {args.total_simulations_number}")
     print(f"minutes_between_checks: {args.minutes_between_checks}")
+    print(f"process PID: {os.getpid()}")
 
     while True:
         simulations_present = total_simulations_number_present(args.directory_to_check)

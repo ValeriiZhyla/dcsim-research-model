@@ -1,0 +1,1 @@
+python start-simulations.py --simulations_number=10 --max_simulation_duration_hours=25 --platform_file=platform/sgbatch.xml --dataset_file=dataset/uniform_RemoteStorage.json --workload_file=workload/simple_unfiorm_100.json --simulation_root_dir=first_phase_100

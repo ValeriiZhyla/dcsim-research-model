@@ -158,6 +158,9 @@ class SimulationDirectory:
     def save_in_database_if_not_exist(self, conn):
         if not self.is_already_in_database(conn):
             self.save_in_database(conn)
+        else:
+            print(f"Simulation [{self.creation_timestamp}-{self.uuid}] is already in database")
+
 
     def is_already_in_database(self, conn):
         with conn.cursor() as cursor:
