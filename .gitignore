@@ -164,5 +164,4 @@ cython_debug/
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/vcs.xml
-/simulation-dataset-preparation/first_phase/test_dataset.csv
-/simulation-dataset-preparation/first_phase/train_dataset.csv
+/simulation-dataset-preparation/first_phase/*.csv
