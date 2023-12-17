@@ -11,8 +11,8 @@ WINDOW_OVERLAP_SIZE = 500
 BATCH_SIZE = 128
 
 
-train_df = pd.read_csv('sequence-to-predict.csv')
-input_columns = ['flops', 'input_files_size', 'output_files_size']
+train_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/extrapolation_dataset.csv')
+input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
 output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
 apply_data_windows = commons.create_windows(train_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns, output_columns=output_columns)
 

@@ -45,13 +45,13 @@ def train_and_evaluate_model():
     start_time = time.time()
 
     # Load data
-    #train_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/train_dataset.csv')
-    #test_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/test_dataset.csv')
-    train_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/train_dataset_small.csv')
-    test_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/test_dataset_small.csv')
+    train_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/train_dataset.csv')
+    test_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/test_dataset.csv')
+    #train_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/train_dataset_small.csv')
+    #test_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/test_dataset_small.csv')
 
     # Transform dataframes into overlapping windows
-    input_columns = ['flops', 'input_files_size', 'output_files_size']
+    input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
     output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
     train_windows = commons.create_windows(train_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns, output_columns=output_columns)
     test_windows = commons.create_windows(test_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns, output_columns=output_columns)
@@ -67,7 +67,7 @@ def train_and_evaluate_model():
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     # Initialize the model, loss function, and optimizer
-    model = BiLSTMModel(input_size=3, hidden_size=HIDDEN_LAYERS, output_size=5).to(device)
+    model = BiLSTMModel(input_size=4, hidden_size=HIDDEN_LAYERS, output_size=5).to(device)
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 

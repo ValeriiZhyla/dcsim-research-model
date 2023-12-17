@@ -168,14 +168,14 @@ class SimulationDirectory:
             table_name = SIMULATED_JOBS_TABLE
         print(f"Simulated job will be saved in table {table_name}")
 
-        if not self.is_already_in_database(conn, table_name):
+        if not self.is_already_in_database(conn):
             self.save_in_database(conn, table_name)
         else:
             print(f"Simulation [{self.creation_timestamp}-{self.uuid}] is already in database")
 
-    def is_already_in_database(self, conn, table_name: str):
+    def is_already_in_database(self, conn):
         with conn.cursor() as cursor:
-            query = f"SELECT 1 FROM {table_name} WHERE id = %s"
+            query = f"SELECT 1 FROM simulations WHERE id = %s"
             cursor.execute(query, (self.uuid,))
             # Fetch the result
             result = cursor.fetchone()
