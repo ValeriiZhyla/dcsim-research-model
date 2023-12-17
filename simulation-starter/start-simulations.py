@@ -132,6 +132,8 @@ class Simulation:
                               f"#SBATCH --time={self.duration_hours_minutes_seconds}",
                               f"#SBATCH --partition=single",
                               f"",
+                              f"#SBATCH --mem=10gb",
+                              f"",
                               f"#SBATCH --mail-user={MAIL_FOR_ERRORS}",
                               f"#SBATCH --mail-type=FAIL",
                               f"",

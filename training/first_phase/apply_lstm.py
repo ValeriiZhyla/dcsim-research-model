@@ -1,15 +1,15 @@
+import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
+from lstm import BiLSTMModel
 
 import commons
 
-WINDOW_SIZE = 500
-WINDOW_OVERLAP_SIZE = 250
+WINDOW_SIZE = 10000
+WINDOW_OVERLAP_SIZE = 500
 BATCH_SIZE = 128
 
-model = torch.load('lstm.pth')
-model.eval()  # Set the model to evaluation mode
 
 train_df = pd.read_csv('sequence-to-predict.csv')
 input_columns = ['flops', 'input_files_size', 'output_files_size']
@@ -22,13 +22,44 @@ input_scaler, output_scaler = commons.create_and_fit_scalers(train_df, input_col
 transformed_dataset = commons.process_windows(apply_data_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
 loader = DataLoader(transformed_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-model.to('cpu')  # or 'cuda:0' if using GPU
 
-# Make predictions
-with torch.no_grad():
+def apply_model_to_data():
+    # Define the device
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print("Using device:", device)
+
+    model = torch.load('lstm.pth')
+    model.to(device)
+
+    # Set the model to evaluation mode
+    model.eval()
+
+    # Evaluate on test data
     predictions = []
-    for inputs, targets in loader:
-        outputs = model(inputs)
-        predictions.extend(outputs.cpu().numpy())
+    actual_values = []
 
-print("XXXX")
+    with torch.no_grad():
+        for inputs, targets in loader:
+            # Move data to the device
+            inputs, targets = inputs.to(device), targets.to(device)
+
+            # Make a prediction
+            outputs = model(inputs)
+
+            # Store predictions and actual values for further metrics calculations
+            predictions.extend(outputs.cpu().numpy())
+            actual_values.extend(targets.cpu().numpy())
+
+    # Convert lists of arrays to single numpy arrays
+    predictions_array = np.vstack(predictions)
+    actual_values_array = np.vstack(actual_values)
+
+    # Calculate metrics for each output parameter and show them
+    commons.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
+
+    # Denormalize and plot results for each parameter
+    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array)
+
+
+if __name__ == '__main__':
+    apply_model_to_data()

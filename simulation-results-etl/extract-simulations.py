@@ -35,6 +35,12 @@ EXPECTED_TIMESTAMP_FORMAT = "%Y%m%d-%H%M%S"
 
 COMPLETED_STATE = "COMPLETED"
 
+EXTRAPOLATION = ["extrapolation", "ext"]
+
+SIMULATED_JOBS_EXTRAPOLATION_TABLE = "simulated_jobs_extrapolation"
+SIMULATED_JOBS_TABLE = "simulated_jobs"
+
+
 def check_arguments(args, parser):
     if not args.simulation_root_dir.strip():
         parser.error("simulation_root_dir argument is empty")
@@ -155,28 +161,33 @@ class SimulationDirectory:
         self.check_uuid()
         self.check_simulation_result_header()
 
-    def save_in_database_if_not_exist(self, conn):
-        if not self.is_already_in_database(conn):
-            self.save_in_database(conn)
+    def save_in_database_if_not_exist(self, conn, is_extrapolation_data: bool):
+        if is_extrapolation_data:
+            table_name = SIMULATED_JOBS_EXTRAPOLATION_TABLE
+        else:
+            table_name = SIMULATED_JOBS_TABLE
+        print(f"Simulated job will be saved in table {table_name}")
+
+        if not self.is_already_in_database(conn, table_name):
+            self.save_in_database(conn, table_name)
         else:
             print(f"Simulation [{self.creation_timestamp}-{self.uuid}] is already in database")
 
-
-    def is_already_in_database(self, conn):
+    def is_already_in_database(self, conn, table_name: str):
         with conn.cursor() as cursor:
-            query = "SELECT 1 FROM simulations WHERE id = %s"
+            query = f"SELECT 1 FROM {table_name} WHERE id = %s"
             cursor.execute(query, (self.uuid,))
             # Fetch the result
             result = cursor.fetchone()
             return result is not None
 
-    def save_in_database(self, conn):
+    def save_in_database(self, conn, table_name: str):
         try:
             with conn.cursor() as cursor:
                 # transaction start
                 self.fill_simulations_table(cursor)
                 self.fill_slurm_metadata_table(cursor)
-                self.fill_jobs_table(cursor)
+                self.fill_jobs_table(cursor, table_name)
                 # transaction end
             conn.commit()
             print(f"Simulation [{self.creation_timestamp}-{self.uuid}] was saved ")
@@ -218,9 +229,9 @@ class SimulationDirectory:
             self.slurm_job_file_content
         ))
 
-    def fill_jobs_table(self, cursor):
-        insert_job_query = """
-                    INSERT INTO simulated_jobs (simulation_id, position_in_batch, tag, machine_name, hit_rate, job_start, job_end, compute_time, flops, input_files_transfer_time, input_files_size, output_files_transfer_time, output_files_size)
+    def fill_jobs_table(self, cursor, table_name):
+        insert_job_query = f"""
+                    INSERT INTO {table_name} (simulation_id, position_in_batch, tag, machine_name, hit_rate, job_start, job_end, compute_time, flops, input_files_transfer_time, input_files_size, output_files_transfer_time, output_files_size)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                 """
         # Parse the CSV data from simulation_result
@@ -335,18 +346,24 @@ def filter_completed_simulations(simulation_directories: list[SimulationDirector
         if COMPLETED_STATE in simulation.state:
             completed_simulations.append(simulation)
         else:
-            print(f"Warning: simulation [{simulation.creation_timestamp}-{simulation.uuid}] is skipped. Cause: state is not [{COMPLETED_STATE}]. Simulation state: [{simulation.state}] ")
+            print(
+                f"Warning: simulation [{simulation.creation_timestamp}-{simulation.uuid}] is skipped. Cause: state is not [{COMPLETED_STATE}]. Simulation state: [{simulation.state}] ")
     return completed_simulations
 
 
-def save_to_database_if_not_exist(conn, completed_simulations: list[SimulationDirectory]):
+def save_to_database_if_not_exist(conn, completed_simulations: list[SimulationDirectory], is_extrapolation_data: bool):
     for simulation in completed_simulations:
-        simulation.save_in_database_if_not_exist(conn)
+        simulation.save_in_database_if_not_exist(conn, is_extrapolation_data)
+
+
+def check_dir_contains_extrapolation(simulation_root_dir):
+    return any(word in simulation_root_dir.lower() for word in EXTRAPOLATION)
 
 
 def main():
-    parser = argparse.ArgumentParser(description='This tool processes the directory with simulations and loads different parts of each simulation into corresponding database tables.',
-                                     formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description='This tool processes the directory with simulations and loads different parts of each simulation into corresponding database tables.',
+        formatter_class=argparse.RawTextHelpFormatter)
     # Define the expected arguments
     parser.add_argument('--simulation_root_dir', type=str, required=True,
                         help='Root directory for simulations. Can be used to accumulate results from many runs. Default directory will be created, if no value provided.')
@@ -360,6 +377,7 @@ def main():
     # Check whether the directory exist
     simulation_root_dir = args.simulation_root_dir
     check_directory_exist(simulation_root_dir)
+    is_extrapolation_data = check_dir_contains_extrapolation(simulation_root_dir)
 
     # Establish the database connection
     conn = establish_database_connection()
@@ -367,10 +385,11 @@ def main():
     simulation_directory_names = get_simulation_directories(simulation_root_dir)
     simulation_directories: list[SimulationDirectory] = [create_directory_entity(simulation_root_dir, name) for name in simulation_directory_names]
     completed_simulations: list[SimulationDirectory] = filter_completed_simulations(simulation_directories)
-    save_to_database_if_not_exist(conn, completed_simulations)
+    save_to_database_if_not_exist(conn, completed_simulations, is_extrapolation_data)
 
     # Close the database connection
     conn.close()
+
 
 if __name__ == "__main__":
     main()

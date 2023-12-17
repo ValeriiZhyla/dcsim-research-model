@@ -1,5 +1,9 @@
 import numpy as np
+import pandas as pd
+import seaborn
 import torch
+from matplotlib import pyplot as plt
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import TensorDataset
 
@@ -72,3 +76,72 @@ def create_and_fit_scalers(df, input_columns, output_columns):
     output_scaler.fit(output_features)
 
     return input_scaler, output_scaler
+
+
+def calculate_metrics(actual_values, predicted_values, output_columns):
+    # Calculate metrics for each output parameter
+    mse_per_param = []
+    mae_per_param = []
+    rmse_per_param = []
+    r_squared_per_param = []
+
+    for i in range(len(output_columns)):
+        # Extract predictions and actual values for the current parameter
+        actual_param = actual_values[:, i]
+        predicted_param = predicted_values[:, i]
+
+        # Calculate metrics for this parameter
+        mse = mean_squared_error(actual_param, predicted_param)
+        mae = mean_absolute_error(actual_param, predicted_param)
+        rmse = np.sqrt(mse)
+        r_squared = r2_score(actual_param, predicted_param)
+
+        # Store the metrics
+        mse_per_param.append(mse)
+        mae_per_param.append(mae)
+        rmse_per_param.append(rmse)
+        r_squared_per_param.append(r_squared)
+
+    return mse_per_param, mae_per_param, rmse_per_param, r_squared_per_param
+
+
+def show_metrics(output_columns, mse_per_param, mae_per_param, rmse_per_param, r_squared_per_param):
+    for i in range(len(output_columns)):
+        print(f"Parameter [{output_columns[i]}]:")
+        print(f"  Mean Squared Error (MSE):         {str(round(mse_per_param[i], 7)).rjust(15)}")
+        print(f"  Root Mean Squared Error (RMSE):   {str(round(rmse_per_param[i], 7)).rjust(15)}")
+        print(f"  Mean Absolute Error (MAE):        {str(round(mae_per_param[i], 7)).rjust(15)}")
+        print(f"  R-squared (R^2):                  {str(round(r_squared_per_param[i], 7)).rjust(15)}")
+        print("=================================")
+
+
+def denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, max_points=10000000):
+    # Scale back to original values for readable plots
+    denorm_predictions_array = output_scaler.inverse_transform(predictions_array)
+    denorm_actual_values_array = output_scaler.inverse_transform(actual_values_array)
+
+    # Check if the number of points is more than max_points
+    if len(predictions_array) > max_points:
+        # Randomly select max_points indices
+        indices = np.random.choice(len(predictions_array), size=max_points, replace=False)
+        denorm_predictions_array = denorm_predictions_array[indices]
+        denorm_actual_values_array = denorm_actual_values_array[indices]
+
+    # Create a DataFrame for plotting
+    for i, label in enumerate(output_columns):
+        # Create a DataFrame for plotting
+        data_for_plot = pd.DataFrame({
+            'Actual Values': denorm_actual_values_array[:, i],
+            'Predictions': denorm_predictions_array[:, i]
+        })
+
+        # Create the scatter plot
+        plt.figure(figsize=(10, 6))
+        seaborn.scatterplot(data=data_for_plot, x='Actual Values', y='Predictions', alpha=0.3)
+        plt.title(f'{label}')
+        plt.show()
+
+
+def calculate_and_show_metrics(output_columns, predictions_array, actual_values_array):
+    mse_per_param, mae_per_param, rmse_per_param, r_squared_per_param = calculate_metrics(actual_values_array, predictions_array, output_columns)
+    show_metrics(output_columns, mse_per_param, mae_per_param, rmse_per_param, r_squared_per_param)

@@ -8,3 +8,5 @@ nohup python -u schedule-simulations.py --script_to_start=starters/start_first_p
 nohup python -u schedule-simulations.py --script_to_start=starters/start_first_phase_1000.sh --directory_to_check=first_phase_1000 --total_simulations_number=1000 --minutes_between_checks=2 > scheduler_first_phase_1000.log 2> scheduler_first_phase_1000_error.log &
 nohup python -u schedule-simulations.py --script_to_start=starters/start_first_phase_1500.sh --directory_to_check=first_phase_1500 --total_simulations_number=1000 --minutes_between_checks=2 > scheduler_first_phase_1500.log 2> scheduler_first_phase_1500_error.log &
 nohup python -u schedule-simulations.py --script_to_start=starters/start_first_phase_2000.sh --directory_to_check=first_phase_2000 --total_simulations_number=1000 --minutes_between_checks=2 > scheduler_first_phase_2000.log 2> scheduler_first_phase_2000_error.log &
+
+nohup python -u schedule-simulations.py --script_to_start=starters/start_first_phase_extrapolation.sh --directory_to_check=first_phase_extrapolation --total_simulations_number=10 --minutes_between_checks=2 > scheduler_first_phase_extrapolation.log 2> scheduler_first_phase_extrapolation_error.log &

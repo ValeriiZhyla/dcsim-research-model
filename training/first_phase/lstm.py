@@ -17,7 +17,7 @@ NUM_EPOCHS = 1000
 WINDOW_SIZE = 500
 WINDOW_OVERLAP_SIZE = 250
 BATCH_SIZE = 128
-HIDDEN_LAYERS = 30
+HIDDEN_LAYERS = 50
 
 
 # Define the LSTM Model
@@ -45,10 +45,10 @@ def train_and_evaluate_model():
     start_time = time.time()
 
     # Load data
-    train_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/train_dataset.csv')
-    test_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/test_dataset.csv')
-    #train_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/train_dataset_small.csv')
-    #test_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/test_dataset_small.csv')
+    #train_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/train_dataset.csv')
+    #test_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/test_dataset.csv')
+    train_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/train_dataset_small.csv')
+    test_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/test_dataset_small.csv')
 
     # Transform dataframes into overlapping windows
     input_columns = ['flops', 'input_files_size', 'output_files_size']
@@ -98,7 +98,6 @@ def train_and_evaluate_model():
 
     # Evaluate the model with test data
     model.eval()
-    test_loss = 0
     predictions = []
     actual_values = []
 
@@ -107,12 +106,8 @@ def train_and_evaluate_model():
             # Move data to the device
             inputs, targets = inputs.to(device), targets.to(device)
 
-            # Forward pass
+            # Make a prediction
             outputs = model(inputs)
-
-            # Calculate the loss
-            loss = criterion(outputs, targets)
-            test_loss += loss.item()
 
             # Store predictions and actual values for further metrics calculations
             predictions.extend(outputs.cpu().numpy())
@@ -122,55 +117,11 @@ def train_and_evaluate_model():
     predictions_array = np.vstack(predictions)
     actual_values_array = np.vstack(actual_values)
 
-    # Calculate metrics for each output parameter
-    mse_per_param = []
-    mae_per_param = []
-    rmse_per_param = []
-    r_squared_per_param = []
+    # Calculate metrics for each output parameter and show them
+    commons.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
 
-    for i in range(len(output_columns)):
-        # Extract predictions and actual values for the current parameter
-        actual_param = actual_values_array[:, i]
-        predicted_param = predictions_array[:, i]
-
-        # Calculate metrics for this parameter
-        mse = mean_squared_error(actual_param, predicted_param)
-        mae = mean_absolute_error(actual_param, predicted_param)
-        rmse = np.sqrt(mse)
-        r_squared = r2_score(actual_param, predicted_param)
-
-        # Store the metrics
-        mse_per_param.append(mse)
-        mae_per_param.append(mae)
-        rmse_per_param.append(rmse)
-        r_squared_per_param.append(r_squared)
-
-    # Print metrics for each parameter
-    for i in range(len(output_columns)):
-        print(f"Parameter [{output_columns[i]}]:")
-        print(f"  Mean Squared Error (MSE):         {str(round(mse_per_param[i], 7)).rjust(15)}")
-        print(f"  Root Mean Squared Error (RMSE):   {str(round(rmse_per_param[i], 7)).rjust(15)}")
-        print(f"  Mean Absolute Error (MAE):        {str(round(mae_per_param[i], 7)).rjust(15)}")
-        print(f"  R-squared (R^2):                  {str(round(r_squared_per_param[i], 7)).rjust(15)}")
-        print("=================================")
-
-    # Scale back to original values for readable plots
-    denorm_predictions_array = output_scaler.inverse_transform(predictions_array)
-    denorm_actual_values_array = output_scaler.inverse_transform(actual_values_array)
-
-    # Create a DataFrame for plotting
-    for i, label in enumerate(output_columns):
-        # Create a DataFrame for plotting
-        data_for_plot = pd.DataFrame({
-            'Actual Values': denorm_actual_values_array[:, i],
-            'Predictions': denorm_predictions_array[:, i]
-        })
-
-        # Create the scatter plot
-        plt.figure(figsize=(10, 6))
-        seaborn.scatterplot(data=data_for_plot, x='Actual Values', y='Predictions', alpha=0.3)
-        plt.title(f'{label}')
-        plt.show()
+    # Denormalize and plot results for each parameter
+    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array)
     return model
 
 
