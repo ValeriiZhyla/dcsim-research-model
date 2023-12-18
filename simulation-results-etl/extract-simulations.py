@@ -161,15 +161,9 @@ class SimulationDirectory:
         self.check_uuid()
         self.check_simulation_result_header()
 
-    def save_in_database_if_not_exist(self, conn, is_extrapolation_data: bool):
-        if is_extrapolation_data:
-            table_name = SIMULATED_JOBS_EXTRAPOLATION_TABLE
-        else:
-            table_name = SIMULATED_JOBS_TABLE
-        print(f"Simulated job will be saved in table {table_name}")
-
+    def save_in_database_if_not_exist(self, conn, table_for_jobs: str):
         if not self.is_already_in_database(conn):
-            self.save_in_database(conn, table_name)
+            self.save_in_database(conn, table_for_jobs)
         else:
             print(f"Simulation [{self.creation_timestamp}-{self.uuid}] is already in database")
 
@@ -352,8 +346,13 @@ def filter_completed_simulations(simulation_directories: list[SimulationDirector
 
 
 def save_to_database_if_not_exist(conn, completed_simulations: list[SimulationDirectory], is_extrapolation_data: bool):
+    if is_extrapolation_data:
+        table_name = SIMULATED_JOBS_EXTRAPOLATION_TABLE
+    else:
+        table_name = SIMULATED_JOBS_TABLE
+    print(f"Simulated jobs will be saved in table {table_name}")
     for simulation in completed_simulations:
-        simulation.save_in_database_if_not_exist(conn, is_extrapolation_data)
+        simulation.save_in_database_if_not_exist(conn, table_name)
 
 
 def check_dir_contains_extrapolation(simulation_root_dir):

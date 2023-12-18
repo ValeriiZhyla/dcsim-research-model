@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
-from lstm import BiLSTMModel
+from gru import BiGRUModel, model_name, HIDDEN_LAYERS, INPUT_SIZE, OUTPUT_SIZE
 
 import commons
 
@@ -28,7 +28,8 @@ def apply_model_to_data():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
 
-    model = torch.load('lstm.pth')
+    model = BiGRUModel(INPUT_SIZE, HIDDEN_LAYERS, OUTPUT_SIZE)
+    model.load_state_dict(torch.load('gru_weights.pth'))
     model.to(device)
 
     # Set the model to evaluation mode
@@ -58,7 +59,7 @@ def apply_model_to_data():
     commons.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
 
     # Denormalize and plot results for each parameter
-    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array)
+    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name)
 
 
 if __name__ == '__main__':
