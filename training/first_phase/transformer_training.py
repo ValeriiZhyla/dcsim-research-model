@@ -13,12 +13,12 @@ NUM_EPOCHS = 100
 WINDOW_SIZE = 500
 WINDOW_OVERLAP_SIZE = 250
 BATCH_SIZE = 128
-HIDDEN_LAYERS = 5 # 8 hidden layers produce NaN loss, 5 Produces good resuls
+HIDDEN_LAYERS = 10  # 8 hidden layers produce NaN loss, 5 Produces good resuls, 10 produces very good results
 INPUT_SIZE = 4
 OUTPUT_SIZE = 5
 NHEADS = 1  # Ensure this is a divisor of HIDDEN_LAYERS
-NUM_ENCODER_LAYERS = 3
-NUM_DECODER_LAYERS = 3
+NUM_ENCODER_LAYERS = 2
+NUM_DECODER_LAYERS = 2
 
 model_name = "Transformer"
 
@@ -50,7 +50,6 @@ class TransformerModel(nn.Module):
         return self.output_projection(output)
 
 
-
 def train_and_evaluate_model():
     # Define the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -64,7 +63,6 @@ def train_and_evaluate_model():
     # test_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/test_dataset.csv')
     train_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/train_dataset_small.csv')
     test_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/test_dataset_small.csv')
-
 
     input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
     output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
@@ -88,22 +86,21 @@ def train_and_evaluate_model():
                              num_decoder_layers=NUM_DECODER_LAYERS).to(device)
 
     criterion = nn.MSELoss()
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.001) # most accurate results so far for 0.001
-    #optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.001)  # most accurate results so far for 0.001
+    # optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
     # Training Loop
     model.train()  # Set the model to training mode
     for epoch in range(NUM_EPOCHS):
         total_loss = 0
         for inputs, targets in train_loader:
-
             inputs, targets = inputs.to(device), targets.to(device)
             optimizer.zero_grad()
 
             # Forward pass
             outputs = model(inputs, targets)
             loss = criterion(outputs, targets)
-            #print(loss)
+            # print(loss)
             # Backward pass
             loss.backward()
             # Check gradients before the optimizer step
@@ -118,7 +115,7 @@ def train_and_evaluate_model():
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Gradient clipping
             optimizer.step()
 
-            #Check weights after the optimizer step
+            # Check weights after the optimizer step
             # print(f"Epoch {epoch}, Batch Weights:")
             # for name, param in model.named_parameters():
             #     print(f"    Weight of {name}: {param.data}")
@@ -148,7 +145,6 @@ def train_and_evaluate_model():
     print(f"Hidden layers: {HIDDEN_LAYERS}")
     print(f"Total time for training: {total_time:.2f} seconds")
     print("=================================")
-
 
     # Evaluate the model with test data
     model.eval()
