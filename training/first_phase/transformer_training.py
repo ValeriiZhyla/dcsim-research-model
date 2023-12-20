@@ -9,11 +9,11 @@ from torch.utils.data import DataLoader
 import commons
 
 # Constants
-NUM_EPOCHS = 1000
-WINDOW_SIZE = 100
-WINDOW_OVERLAP_SIZE = 50
-BATCH_SIZE = 64
-HIDDEN_LAYERS = 64
+NUM_EPOCHS = 100
+WINDOW_SIZE = 500
+WINDOW_OVERLAP_SIZE = 250
+BATCH_SIZE = 128
+HIDDEN_LAYERS = 5 # 8 hidden layers produce NaN loss, 5 Produces good resuls
 INPUT_SIZE = 4
 OUTPUT_SIZE = 5
 NHEADS = 1  # Ensure this is a divisor of HIDDEN_LAYERS
@@ -26,24 +26,28 @@ model_name = "Transformer"
 class TransformerModel(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, nhead, num_encoder_layers, num_decoder_layers):
         super(TransformerModel, self).__init__()
-        self.embedding_src = nn.Linear(input_size, hidden_size)
-        self.embedding_tgt = nn.Linear(output_size, hidden_size)
+        # Separate linear layers to project source and target features to hidden dimension
+        self.src_input_projection = nn.Linear(input_size, hidden_size)
+        self.tgt_input_projection = nn.Linear(output_size, hidden_size)
 
-        # Initialize weights using Xavier uniform initialization
-        #nn.init.xavier_uniform_(self.embedding_src.weight)
-        #nn.init.xavier_uniform_(self.embedding_tgt.weight)
-
+        # Transformer layer
         self.transformer = nn.Transformer(d_model=hidden_size, nhead=nhead,
                                           num_encoder_layers=num_encoder_layers,
                                           num_decoder_layers=num_decoder_layers,
                                           batch_first=True)
-        self.fc_out = nn.Linear(hidden_size, output_size)
+        # Linear layer to project from hidden dimension to output size
+        self.output_projection = nn.Linear(hidden_size, output_size)
 
     def forward(self, src, tgt):
-        src = self.embedding_src(src)
-        tgt = self.embedding_tgt(tgt)
+        # Project input to hidden size
+        src = self.src_input_projection(src)
+        tgt = self.tgt_input_projection(tgt)
+
+        # Transformer processing
         output = self.transformer(src, tgt)
-        return self.fc_out(output)
+
+        # Project output to target size
+        return self.output_projection(output)
 
 
 
@@ -84,8 +88,8 @@ def train_and_evaluate_model():
                              num_decoder_layers=NUM_DECODER_LAYERS).to(device)
 
     criterion = nn.MSELoss()
-    #optimizer = torch.optim.Adam(model.parameters(), lr=0.00001)
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.001) # most accurate results so far for 0.001
+    #optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
     # Training Loop
     model.train()  # Set the model to training mode
@@ -99,36 +103,38 @@ def train_and_evaluate_model():
             # Forward pass
             outputs = model(inputs, targets)
             loss = criterion(outputs, targets)
+            #print(loss)
             # Backward pass
             loss.backward()
             # Check gradients before the optimizer step
-            print(f"Epoch {epoch}, Batch Gradients:")
-            for name, param in model.named_parameters():
-                if param.grad is not None:
-                    print(f"    Gradient of {name}: {param.grad}")
-                    if torch.isnan(param.grad).any():
-                        print(f"    !!! NaN detected in gradients of {name}")
+            # print(f"Epoch {epoch}, Batch Gradients:")
+            # for name, param in model.named_parameters():
+            #     if param.grad is not None:
+            #         print(f"    Gradient of {name}: {param.grad}")
+            #         if torch.isnan(param.grad).any():
+            #             print(f"    !!! NaN detected in gradients of {name}")
 
-
+            # It helps, nan otherwise
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Gradient clipping
             optimizer.step()
 
-            # Check weights after the optimizer step
-            print(f"Epoch {epoch}, Batch Weights:")
-            for name, param in model.named_parameters():
-                print(f"    Weight of {name}: {param.data}")
-                if torch.isnan(param.data).any():
-                    print(f"    !!! NaN detected in weights of {name}")
-
-            # Optionally, break if NaN is detected
-            if torch.isnan(loss).any() or torch.isnan(outputs).any():
-                print("!!! NaN detected, stopping training")
-                break
+            #Check weights after the optimizer step
+            # print(f"Epoch {epoch}, Batch Weights:")
+            # for name, param in model.named_parameters():
+            #     print(f"    Weight of {name}: {param.data}")
+            #     if torch.isnan(param.data).any():
+            #         print(f"    !!! NaN detected in weights of {name}")
+            #
+            # # Optionally, break if NaN is detected
+            # if torch.isnan(loss).any() or torch.isnan(outputs).any():
+            #     print("!!! NaN detected, stopping training")
+            #     break
 
             total_loss += loss.item()
         avg_loss = total_loss / len(train_loader)
         print(f'Epoch [{epoch + 1}/{NUM_EPOCHS}], Average Loss: {avg_loss}')
-
+    # loss converges to +- 0.092
+    # some starts to +- 0.042
 
     # Stop timer
     end_time = time.time()
@@ -155,7 +161,7 @@ def train_and_evaluate_model():
             inputs, targets = inputs.to(device), targets.to(device)
 
             # Make a prediction
-            outputs = model(inputs)
+            outputs = model(inputs, targets)
 
             # Store predictions and actual values for further metrics calculations
             predictions.extend(outputs.cpu().numpy())
