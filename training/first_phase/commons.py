@@ -45,7 +45,7 @@ def create_windows(df, window_size, overlap_size, input_columns, output_columns)
     return windowed_data
 
 
-def process_windows(windowed_data, window_size, input_scaler, output_scaler, input_columns, output_columns):
+def scale_and_reshape_windows(windowed_data, window_size, input_scaler, output_scaler, input_columns, output_columns):
     inputs, outputs = zip(*windowed_data)
 
     # Flatten, scale, and un-flatten inputs

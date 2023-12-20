@@ -63,28 +63,31 @@ def train_and_evaluate_model():
     input_scaler, output_scaler = commons.create_and_fit_scalers(train_df, input_columns, output_columns)
 
     # Prepare datasets
-    train_dataset = commons.process_windows(train_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
-    test_dataset = commons.process_windows(test_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
+    train_dataset = commons.scale_and_reshape_windows(train_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
+    test_dataset = commons.scale_and_reshape_windows(test_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
 
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     # Initialize the model, loss function, and optimizer
-    model = BiGRUModel(input_size=4, hidden_size=HIDDEN_LAYERS, output_size=5).to(device)
+    model = BiGRUModel(input_size=INPUT_SIZE, hidden_size=HIDDEN_LAYERS, output_size=OUTPUT_SIZE).to(device)
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
     # Training loop
+    model.train()
     for epoch in range(NUM_EPOCHS):
-        for windows, targets in train_loader:
-            windows, targets = windows.to(device), targets.to(device)
+        total_loss = 0
+        for inputs, targets in train_loader:
+            inputs, targets = inputs.to(device), targets.to(device)
             optimizer.zero_grad()
-            outputs = model(windows)
+            outputs = model(inputs)
             loss = criterion(outputs, targets)
             loss.backward()
             optimizer.step()
-
-        print(f'Epoch [{epoch + 1}/{NUM_EPOCHS}], Loss: {loss.item()}')
+            total_loss += loss.item()
+        avg_loss = total_loss / len(train_loader)
+        print(f'Epoch [{epoch + 1}/{NUM_EPOCHS}], Average Loss: {avg_loss}')
 
     # Stop timer
     end_time = time.time()

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
-from gru import BiGRUModel, model_name, HIDDEN_LAYERS, INPUT_SIZE, OUTPUT_SIZE
+from gru_training import BiGRUModel, model_name, HIDDEN_LAYERS, INPUT_SIZE, OUTPUT_SIZE
 
 import commons
 
@@ -19,7 +19,7 @@ apply_data_windows = commons.create_windows(train_df, window_size=WINDOW_SIZE, o
 # Fit the scalers on the whole training dataset
 input_scaler, output_scaler = commons.create_and_fit_scalers(train_df, input_columns, output_columns)
 
-transformed_dataset = commons.process_windows(apply_data_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
+transformed_dataset = commons.scale_and_reshape_windows(apply_data_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
 loader = DataLoader(transformed_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
 
