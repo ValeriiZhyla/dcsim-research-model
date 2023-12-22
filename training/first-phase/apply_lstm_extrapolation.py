@@ -29,7 +29,7 @@ def apply_model_to_data():
     print("Using device:", device)
 
     model = BiLSTMModel( INPUT_SIZE, HIDDEN_LAYERS, OUTPUT_SIZE)
-    model.load_state_dict(torch.load('lstm_weights.pth'))
+    model.load_state_dict(torch.load('../../trained-models/first-phase/lstm_weights.pth'))
     model.to(device)
 
     # Set the model to evaluation mode

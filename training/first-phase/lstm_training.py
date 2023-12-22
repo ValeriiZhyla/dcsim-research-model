@@ -13,11 +13,11 @@ from torch.utils.data import DataLoader, TensorDataset
 import commons
 
 # Constants
-NUM_EPOCHS = 1000
+NUM_EPOCHS = 250
 WINDOW_SIZE = 500
 WINDOW_OVERLAP_SIZE = 250
 BATCH_SIZE = 128
-HIDDEN_LAYERS = 50
+HIDDEN_LAYERS = 75
 INPUT_SIZE = 4
 OUTPUT_SIZE = 5
 
@@ -48,10 +48,10 @@ def train_and_evaluate_model():
     start_time = time.time()
 
     # Load data
-    #train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset.csv')
-    #test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset.csv')
-    train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset_small.csv')
-    test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset_small.csv')
+    train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset.csv')
+    test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset.csv')
+    #train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset_small.csv')
+    #test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset_small.csv')
 
     # Transform dataframes into overlapping windows
     input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
@@ -133,5 +133,5 @@ def train_and_evaluate_model():
 
 if __name__ == '__main__':
     model = train_and_evaluate_model()
-    torch.save(model.state_dict(), 'lstm_weights.pth')
-    torch.save(model, 'lstm.pth')
+    torch.save(model.state_dict(), '../../trained-models/first-phase/lstm_weights.pth')
+    torch.save(model, '../../trained-models/first-phase/lstm.pth')

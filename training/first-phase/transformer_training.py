@@ -4,16 +4,17 @@ import numpy as np
 import pandas as pd
 import torch
 from torch import nn
+from torch.nn import init
 from torch.utils.data import DataLoader
 
 import commons
 
 # Constants
-NUM_EPOCHS = 100
+NUM_EPOCHS = 25
 WINDOW_SIZE = 500
 WINDOW_OVERLAP_SIZE = 250
-BATCH_SIZE = 128
-HIDDEN_LAYERS = 10  # 8 hidden layers produce NaN loss, 5 Produces good resuls, 10 produces very good results
+BATCH_SIZE = 32
+HIDDEN_LAYERS = 15  # 8 hidden layers produce NaN loss, 5 Produces good results, 10 produces very good results
 INPUT_SIZE = 4
 OUTPUT_SIZE = 5
 NHEADS = 1  # Ensure this is a divisor of HIDDEN_LAYERS
@@ -38,6 +39,7 @@ class TransformerModel(nn.Module):
         # Linear layer to project from hidden dimension to output size
         self.output_projection = nn.Linear(hidden_size, output_size)
 
+
     def forward(self, src, tgt):
         # Project input to hidden size
         src = self.src_input_projection(src)
@@ -49,7 +51,6 @@ class TransformerModel(nn.Module):
         # Project output to target size
         return self.output_projection(output)
 
-
 def train_and_evaluate_model():
     # Define the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -59,10 +60,10 @@ def train_and_evaluate_model():
     start_time = time.time()
 
     # Load data
-    # train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset.csv')
-    # test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset.csv')
-    train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset_small.csv')
-    test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset_small.csv')
+    train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset.csv')
+    test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset.csv')
+    #train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset_small.csv')
+    #test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset_small.csv')
 
     input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
     output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
