@@ -100,32 +100,12 @@ def train_and_evaluate_model():
             # Forward pass
             outputs = model(inputs, targets)
             loss = criterion(outputs, targets)
-            # print(loss)
             # Backward pass
             loss.backward()
-            # Check gradients before the optimizer step
-            # print(f"Epoch {epoch}, Batch Gradients:")
-            # for name, param in model.named_parameters():
-            #     if param.grad is not None:
-            #         print(f"    Gradient of {name}: {param.grad}")
-            #         if torch.isnan(param.grad).any():
-            #             print(f"    !!! NaN detected in gradients of {name}")
 
             # It helps, nan otherwise
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Gradient clipping
             optimizer.step()
-
-            # Check weights after the optimizer step
-            # print(f"Epoch {epoch}, Batch Weights:")
-            # for name, param in model.named_parameters():
-            #     print(f"    Weight of {name}: {param.data}")
-            #     if torch.isnan(param.data).any():
-            #         print(f"    !!! NaN detected in weights of {name}")
-            #
-            # # Optionally, break if NaN is detected
-            # if torch.isnan(loss).any() or torch.isnan(outputs).any():
-            #     print("!!! NaN detected, stopping training")
-            #     break
 
             total_loss += loss.item()
         avg_loss = total_loss / len(train_loader)
