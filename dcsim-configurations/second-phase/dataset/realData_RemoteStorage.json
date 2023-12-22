@@ -37,7 +37,7 @@
   },
   "Merge_T1":{
     "location":"RemoteStorage",
-    "num_files":50,
+    "num_files":500,
     "filesize": {
         "type":"histogram",
         "counts": [23054, 0, 0, 0, 0, 0, 0, 0, 0, 0],
