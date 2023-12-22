@@ -1,53 +1,42 @@
 import time
 
 import numpy as np
-import pandas as pd
+import seaborn
 import torch
-from torch import nn
-from torch.utils.data import DataLoader
-
+import torch.nn as nn
+import pandas as pd
+from matplotlib import pyplot as plt
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.preprocessing import StandardScaler
+from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
+from torch.utils.data import DataLoader, TensorDataset
 import commons
 
 # Constants
-NUM_EPOCHS = 100
+NUM_EPOCHS = 1000
 WINDOW_SIZE = 500
 WINDOW_OVERLAP_SIZE = 250
 BATCH_SIZE = 128
-HIDDEN_LAYERS = 10  # 8 hidden layers produce NaN loss, 5 Produces good resuls, 10 produces very good results
+HIDDEN_LAYERS = 50
 INPUT_SIZE = 4
 OUTPUT_SIZE = 5
-NHEADS = 1  # Ensure this is a divisor of HIDDEN_LAYERS
-NUM_ENCODER_LAYERS = 2
-NUM_DECODER_LAYERS = 2
 
-model_name = "Transformer"
+model_name = "GRU"
 
+# Define the GRU Model
+class BiGRUModel(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(BiGRUModel, self).__init__()
+        self.gru = nn.GRU(input_size, hidden_size, batch_first=True, bidirectional=True)
+        self.fc = nn.Linear(hidden_size * 2, output_size)  # Multiply by 2 for bidirectional
 
-class TransformerModel(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size, nhead, num_encoder_layers, num_decoder_layers):
-        super(TransformerModel, self).__init__()
-        # Separate linear layers to project source and target features to hidden dimension
-        self.src_input_projection = nn.Linear(input_size, hidden_size)
-        self.tgt_input_projection = nn.Linear(output_size, hidden_size)
+    def forward(self, x):
+        # GRU layer
+        out, _ = self.gru(x)  # out shape: [batch_size, sequence_length, hidden_size * 2]
 
-        # Transformer layer
-        self.transformer = nn.Transformer(d_model=hidden_size, nhead=nhead,
-                                          num_encoder_layers=num_encoder_layers,
-                                          num_decoder_layers=num_decoder_layers,
-                                          batch_first=True)
-        # Linear layer to project from hidden dimension to output size
-        self.output_projection = nn.Linear(hidden_size, output_size)
-
-    def forward(self, src, tgt):
-        # Project input to hidden size
-        src = self.src_input_projection(src)
-        tgt = self.tgt_input_projection(tgt)
-
-        # Transformer processing
-        output = self.transformer(src, tgt)
-
-        # Project output to target size
-        return self.output_projection(output)
+        # Apply the linear layer to each time step
+        out = self.fc(out)  # out shape: [batch_size, sequence_length, output_size]
+        return out
 
 
 def train_and_evaluate_model():
@@ -59,11 +48,12 @@ def train_and_evaluate_model():
     start_time = time.time()
 
     # Load data
-    # train_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/train_dataset.csv')
-    # test_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/test_dataset.csv')
-    train_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/train_dataset_small.csv')
-    test_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/test_dataset_small.csv')
+    #train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset.csv')
+    #test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset.csv')
+    train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset_small.csv')
+    test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset_small.csv')
 
+    # Transform dataframes into overlapping windows
     input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
     output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
     train_windows = commons.create_windows(train_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns, output_columns=output_columns)
@@ -79,39 +69,25 @@ def train_and_evaluate_model():
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-    # Initialize the model
-    model = TransformerModel(input_size=INPUT_SIZE, hidden_size=HIDDEN_LAYERS,
-                             output_size=OUTPUT_SIZE, nhead=NHEADS,
-                             num_encoder_layers=NUM_ENCODER_LAYERS,
-                             num_decoder_layers=NUM_DECODER_LAYERS).to(device)
-
+    # Initialize the model, loss function, and optimizer
+    model = BiGRUModel(input_size=INPUT_SIZE, hidden_size=HIDDEN_LAYERS, output_size=OUTPUT_SIZE).to(device)
     criterion = nn.MSELoss()
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.001)  # most accurate results so far for 0.001
-    # optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-    # Training Loop
-    model.train()  # Set the model to training mode
+    # Training loop
+    model.train()
     for epoch in range(NUM_EPOCHS):
         total_loss = 0
         for inputs, targets in train_loader:
             inputs, targets = inputs.to(device), targets.to(device)
             optimizer.zero_grad()
-
-            # Forward pass
-            outputs = model(inputs, targets)
+            outputs = model(inputs)
             loss = criterion(outputs, targets)
-            # Backward pass
             loss.backward()
-
-            # It helps, nan otherwise
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Gradient clipping
             optimizer.step()
-
             total_loss += loss.item()
         avg_loss = total_loss / len(train_loader)
         print(f'Epoch [{epoch + 1}/{NUM_EPOCHS}], Average Loss: {avg_loss}')
-    # loss converges to +- 0.092
-    # some starts to +- 0.042
 
     # Stop timer
     end_time = time.time()
@@ -137,7 +113,7 @@ def train_and_evaluate_model():
             inputs, targets = inputs.to(device), targets.to(device)
 
             # Make a prediction
-            outputs = model(inputs, targets)
+            outputs = model(inputs)
 
             # Store predictions and actual values for further metrics calculations
             predictions.extend(outputs.cpu().numpy())
@@ -152,11 +128,14 @@ def train_and_evaluate_model():
 
     # Denormalize and plot results for each parameter
     commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name)
-
     return model
 
 
 if __name__ == '__main__':
     model = train_and_evaluate_model()
-    torch.save(model.state_dict(), 'transformer_weights.pth')
-    torch.save(model, 'transformer.pth')
+    torch.save(model.state_dict(), 'gru_weights.pth')
+    torch.save(model, 'gru.pth')
+
+
+
+

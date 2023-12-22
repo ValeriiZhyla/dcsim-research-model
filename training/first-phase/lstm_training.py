@@ -21,18 +21,18 @@ HIDDEN_LAYERS = 50
 INPUT_SIZE = 4
 OUTPUT_SIZE = 5
 
-model_name = "GRU"
+model_name = "LSTM"
 
-# Define the GRU Model
-class BiGRUModel(nn.Module):
+# Define the LSTM Model
+class BiLSTMModel(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
-        super(BiGRUModel, self).__init__()
-        self.gru = nn.GRU(input_size, hidden_size, batch_first=True, bidirectional=True)
+        super(BiLSTMModel, self).__init__()
+        self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True, bidirectional=True)
         self.fc = nn.Linear(hidden_size * 2, output_size)  # Multiply by 2 for bidirectional
 
     def forward(self, x):
-        # GRU layer
-        out, _ = self.gru(x)  # out shape: [batch_size, sequence_length, hidden_size * 2]
+        # LSTM layer
+        out, _ = self.lstm(x)  # out shape: [batch_size, sequence_length, hidden_size * 2]
 
         # Apply the linear layer to each time step
         out = self.fc(out)  # out shape: [batch_size, sequence_length, output_size]
@@ -48,10 +48,10 @@ def train_and_evaluate_model():
     start_time = time.time()
 
     # Load data
-    #train_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/train_dataset.csv')
-    #test_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/test_dataset.csv')
-    train_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/train_dataset_small.csv')
-    test_df = pd.read_csv('../../simulation-dataset-preparation/first_phase/test_dataset_small.csv')
+    #train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset.csv')
+    #test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset.csv')
+    train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset_small.csv')
+    test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset_small.csv')
 
     # Transform dataframes into overlapping windows
     input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
@@ -70,7 +70,7 @@ def train_and_evaluate_model():
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     # Initialize the model, loss function, and optimizer
-    model = BiGRUModel(input_size=INPUT_SIZE, hidden_size=HIDDEN_LAYERS, output_size=OUTPUT_SIZE).to(device)
+    model = BiLSTMModel(input_size=INPUT_SIZE, hidden_size=HIDDEN_LAYERS, output_size=OUTPUT_SIZE).to(device)
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
@@ -133,9 +133,5 @@ def train_and_evaluate_model():
 
 if __name__ == '__main__':
     model = train_and_evaluate_model()
-    torch.save(model.state_dict(), 'gru_weights.pth')
-    torch.save(model, 'gru.pth')
-
-
-
-
+    torch.save(model.state_dict(), 'lstm_weights.pth')
+    torch.save(model, 'lstm.pth')
