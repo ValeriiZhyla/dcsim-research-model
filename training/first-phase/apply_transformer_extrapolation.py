@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import DataLoader
 
 import commons
-from gru_training import BiGRUModel, model_name, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE
+from transformer_training import TransformerModel, model_name, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE
 
 train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/extrapolation_dataset.csv')
 input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
@@ -23,7 +23,7 @@ def apply_model_to_data():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
 
-    model = torch.load('../../trained-models/first-phase/gru.pth')
+    model = torch.load('../../trained-models/first-phase/transformer.pth')
     model.to(device)
 
     # Set the model to evaluation mode
@@ -39,7 +39,7 @@ def apply_model_to_data():
             inputs, targets = inputs.to(device), targets.to(device)
 
             # Make a prediction
-            outputs = model(inputs)
+            outputs = model(inputs, targets)
 
             # Store predictions and actual values for further metrics calculations
             predictions.extend(outputs.cpu().numpy())

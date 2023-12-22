@@ -133,8 +133,8 @@ def train_and_evaluate_model():
 
 if __name__ == '__main__':
     model = train_and_evaluate_model()
-    torch.save(model.state_dict(), 'gru_weights.pth')
-    torch.save(model, 'gru.pth')
+    torch.save(model.state_dict(), 'generated-models/gru_weights.pth')
+    torch.save(model, 'generated-models/gru.pth')
 
 
 

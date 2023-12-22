@@ -159,5 +159,5 @@ def train_and_evaluate_model():
 
 if __name__ == '__main__':
     model = train_and_evaluate_model()
-    torch.save(model.state_dict(), 'transformer_weights.pth')
-    torch.save(model, 'transformer.pth')
+    torch.save(model.state_dict(), 'generated-models/transformer_weights.pth')
+    torch.save(model, 'generated-models/transformer.pth')
