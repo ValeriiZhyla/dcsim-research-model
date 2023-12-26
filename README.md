@@ -2,9 +2,9 @@
 
 ## Scripts
 - [start-simulations.py](simulation-starter%2Fstart-simulations.py): generates and runs DCSim simulations as Slurm jobs. This tool will automate preparation and starting of each simulation.
-- [schedule-simulations.py](simulation-scheduler%2Fschedule-simulations.py): starts simulation-starter.py, fills all available job slots, waits for free slots and fills them. Terminates when required number of simulations is completed. This tool will automate starting the needed number of simulations (and with nohup you can run it and logout)
-- [extract-simulations.py](simulation-results-etl%2Fextract-simulations.py): reads the directories created by simulation-starter.py, processes the files and writes the content into database. This tool will move data from directories to database.
-- [prepare-dataset.py](simulation-dataset-preparation%2Fprepare-dataset.py): exports the data from database in single CSV file, that will be used for model training and evaluating.
+- [schedule-simulations.py](simulation-scheduler%2Fschedule-simulations.py): starts start-simulations.py, fills all available job slots, waits for free slots and fills them. Terminates when required number of simulations is completed. This tool will automate starting the needed number of simulations (and with nohup you can run it and logout)
+- [extract-simulations.py](simulation-results-etl%2Fextract-simulations.py): reads the directories created by start-simulations.py, processes the files and writes the content into database. This tool will move data from directories to database.
+- [prepare-dataset.py](simulation-dataset-preparation%2Fprepare-dataset.py): exports the data from database in CSV files, that will be used for model training and evaluation.
 
 ## Pytorch
 For pytorch installation with pip and CUDA support use for Windows 11

@@ -22,6 +22,8 @@ INPUT_SIZE = 4
 OUTPUT_SIZE = 5
 
 model_name = "GRU"
+plot_color = seaborn.color_palette("deep")[0]  # deep blue
+
 
 # Define the GRU Model
 class BiGRUModel(nn.Module):
@@ -50,8 +52,8 @@ def train_and_evaluate_model():
     # Load data
     train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset.csv')
     test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset.csv')
-    #train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset_small.csv')
-    #test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset_small.csv')
+    # train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset_small.csv')
+    # test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset_small.csv')
 
     # Transform dataframes into overlapping windows
     input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
@@ -127,7 +129,7 @@ def train_and_evaluate_model():
     commons.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
 
     # Denormalize and plot results for each parameter
-    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name)
+    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name, color_name=plot_color)
     return model
 
 
@@ -135,7 +137,3 @@ if __name__ == '__main__':
     model = train_and_evaluate_model()
     torch.save(model.state_dict(), 'generated-models/gru_weights.pth')
     torch.save(model, 'generated-models/gru.pth')
-
-
-
-

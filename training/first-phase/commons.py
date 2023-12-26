@@ -115,7 +115,7 @@ def show_metrics(output_columns, mse_per_param, mae_per_param, rmse_per_param, r
         print("=================================")
 
 
-def denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name, max_points=10000000):
+def denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name, max_points=10000000, color_name="blue"):
     # Scale back to original values for readable plots
     denorm_predictions_array = output_scaler.inverse_transform(predictions_array)
     denorm_actual_values_array = output_scaler.inverse_transform(actual_values_array)
@@ -137,7 +137,7 @@ def denorm_and_plot(output_columns, output_scaler, predictions_array, actual_val
 
         # Create the scatter plot
         plt.figure(figsize=(10, 6))
-        seaborn.scatterplot(data=data_for_plot, x='Actual Values', y='Predictions', alpha=0.3)
+        seaborn.scatterplot(data=data_for_plot, x='Actual Values', y='Predictions', alpha=0.1, color=color_name)
         plt.title(f'{label} [{model_name}]')
         plt.show()
 

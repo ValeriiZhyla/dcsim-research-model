@@ -22,6 +22,8 @@ INPUT_SIZE = 4
 OUTPUT_SIZE = 5
 
 model_name = "LSTM"
+plot_color = seaborn.color_palette("deep")[2]  # deep green
+
 
 # Define the LSTM Model
 class BiLSTMModel(nn.Module):

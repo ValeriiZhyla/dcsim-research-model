@@ -2,6 +2,7 @@ import time
 
 import numpy as np
 import pandas as pd
+import seaborn
 import torch
 from torch import nn
 from torch.nn import init
@@ -22,6 +23,8 @@ NUM_ENCODER_LAYERS = 2
 NUM_DECODER_LAYERS = 2
 
 model_name = "Transformer"
+plot_color = seaborn.color_palette("deep")[4]  # deep purple
+
 
 
 class TransformerModel(nn.Module):
