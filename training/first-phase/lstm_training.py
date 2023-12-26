@@ -129,7 +129,7 @@ def train_and_evaluate_model():
     commons.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
 
     # Denormalize and plot results for each parameter
-    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name)
+    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name, purpose="training")
     return model
 
 

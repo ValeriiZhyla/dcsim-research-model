@@ -53,7 +53,7 @@ def apply_model_to_data():
     commons.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
 
     # Denormalize and plot results for each parameter
-    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name, color_name=plot_color)
+    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name, color_name=plot_color, purpose="interpolation")
 
 
 if __name__ == '__main__':

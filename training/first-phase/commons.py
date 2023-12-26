@@ -115,7 +115,7 @@ def show_metrics(output_columns, mse_per_param, mae_per_param, rmse_per_param, r
         print("=================================")
 
 
-def denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name, max_points=10000000, color_name="blue"):
+def denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name, max_points=10000000, color_name="blue", purpose=None):
     # Scale back to original values for readable plots
     denorm_predictions_array = output_scaler.inverse_transform(predictions_array)
     denorm_actual_values_array = output_scaler.inverse_transform(actual_values_array)
@@ -127,6 +127,8 @@ def denorm_and_plot(output_columns, output_scaler, predictions_array, actual_val
         denorm_predictions_array = denorm_predictions_array[indices]
         denorm_actual_values_array = denorm_actual_values_array[indices]
 
+    seaborn.set_style("whitegrid")
+
     # Create a DataFrame for plotting
     for i, label in enumerate(output_columns):
         # Create a DataFrame for plotting
@@ -137,8 +139,17 @@ def denorm_and_plot(output_columns, output_scaler, predictions_array, actual_val
 
         # Create the scatter plot
         plt.figure(figsize=(10, 6))
-        seaborn.scatterplot(data=data_for_plot, x='Actual Values', y='Predictions', alpha=0.1, color=color_name)
-        plt.title(f'{label} [{model_name}]')
+        plot = seaborn.scatterplot(data=data_for_plot, x='Actual Values', y='Predictions', alpha=0.1, color=color_name)
+        plt.title(f'{label} [{model_name}]', fontweight='bold', pad=20, fontsize=14)
+        plot.set_xlabel(plot.get_xlabel(), fontdict={'weight': 'bold'}, labelpad=15, fontsize=14),
+        plot.set_ylabel(plot.get_ylabel(), fontdict={'weight': 'bold'}, labelpad=15, fontsize=14)
+
+        if purpose is None:
+            file_name = f"plots/{model_name}-{label}.png"
+        else:
+            file_name = f"plots/{model_name}-{purpose}-{label}.png"
+
+        plt.savefig(file_name, dpi=300, bbox_inches='tight')
         plt.show()
 
 
