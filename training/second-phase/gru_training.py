@@ -13,28 +13,28 @@ from torch.utils.data import DataLoader, TensorDataset
 import commons
 
 # Constants
-NUM_EPOCHS = 250
-WINDOW_SIZE = 500
-WINDOW_OVERLAP_SIZE = 250
-BATCH_SIZE = 128
-HIDDEN_LAYERS = 75
+NUM_EPOCHS = 200
+WINDOW_SIZE = 200
+WINDOW_OVERLAP_SIZE = 100
+BATCH_SIZE = 32
+HIDDEN_LAYERS = 100
 INPUT_SIZE = 4
 OUTPUT_SIZE = 5
 
-model_name = "LSTM"
-plot_color = seaborn.color_palette("deep")[2]  # deep green
+model_name = "GRU"
+plot_color = seaborn.color_palette("deep")[0]  # deep blue
 
 
-# Define the LSTM Model
-class BiLSTMModel(nn.Module):
+# Define the GRU Model
+class BiGRUModel(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
-        super(BiLSTMModel, self).__init__()
-        self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True, bidirectional=True)
+        super(BiGRUModel, self).__init__()
+        self.gru = nn.GRU(input_size, hidden_size, batch_first=True, bidirectional=True)
         self.fc = nn.Linear(hidden_size * 2, output_size)  # Multiply by 2 for bidirectional
 
     def forward(self, x):
-        # LSTM layer
-        out, _ = self.lstm(x)  # out shape: [batch_size, sequence_length, hidden_size * 2]
+        # GRU layer
+        out, _ = self.gru(x)  # out shape: [batch_size, sequence_length, hidden_size * 2]
 
         # Apply the linear layer to each time step
         out = self.fc(out)  # out shape: [batch_size, sequence_length, output_size]
@@ -50,10 +50,10 @@ def train_and_evaluate_model():
     start_time = time.time()
 
     # Load data
-    train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset.csv')
-    test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset.csv')
-    #train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset_small.csv')
-    #test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset_small.csv')
+    train_df = pd.read_csv('../../simulation-dataset-preparation/second-phase/train_dataset.csv')
+    test_df = pd.read_csv('../../simulation-dataset-preparation/second-phase/test_dataset.csv')
+    #train_df = pd.read_csv('../../simulation-dataset-preparation/second-phase/train_dataset_small.csv')
+    #test_df = pd.read_csv('../../simulation-dataset-preparation/second-phase/test_dataset_small.csv')
 
     # Transform dataframes into overlapping windows
     input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
@@ -72,7 +72,7 @@ def train_and_evaluate_model():
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     # Initialize the model, loss function, and optimizer
-    model = BiLSTMModel(input_size=INPUT_SIZE, hidden_size=HIDDEN_LAYERS, output_size=OUTPUT_SIZE).to(device)
+    model = BiGRUModel(input_size=INPUT_SIZE, hidden_size=HIDDEN_LAYERS, output_size=OUTPUT_SIZE).to(device)
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
@@ -129,11 +129,11 @@ def train_and_evaluate_model():
     commons.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
 
     # Denormalize and plot results for each parameter
-    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name, purpose="training")
+    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name, color_name=plot_color, purpose="training")
     return model
 
 
 if __name__ == '__main__':
     model = train_and_evaluate_model()
-    torch.save(model.state_dict(), 'generated-models/lstm_weights.pth')
-    torch.save(model, 'generated-models/lstm.pth')
+    torch.save(model.state_dict(), 'generated-models/gru_weights.pth')
+    torch.save(model, 'generated-models/gru.pth')

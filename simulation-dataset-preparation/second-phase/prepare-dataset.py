@@ -17,7 +17,7 @@ DEFAULT_TEST_FILE_PATH = "./test_dataset.csv"
 DEFAULT_SMALL_TRAINING_FILE_PATH = "./train_dataset_small.csv"
 DEFAULT_SMALL_TEST_FILE_PATH = "./test_dataset_small.csv"
 
-DEFAULT_EXTRAPOLATION_FILE_PATH = "/extrapolation_dataset.csv"
+DEFAULT_EXTRAPOLATION_FILE_PATH = "./extrapolation_dataset.csv"
 
 TEST_DATASET_SIZE = 0.3
 SEED = 42

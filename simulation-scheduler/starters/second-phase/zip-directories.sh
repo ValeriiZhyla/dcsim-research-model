@@ -1,0 +1,1 @@
+zip -r second_phase_archive.zip second_phase_10 second_phase_20 second_phase_50 second_phase_100 second_phase_250 second_phase_500 second_phase_1000 second_phase_extrapolation
