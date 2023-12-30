@@ -23,8 +23,8 @@ def apply_model_to_data():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
 
-    # model = torch.load('../../trained-models/second-phase/lstm.pth')
-    model = torch.load('generated-models/lstm.pth')
+    model = torch.load('../../trained-models/second-phase/lstm.pth')
+    # model = torch.load('generated-models/lstm.pth')
     model.to(device)
 
     # Set the model to evaluation mode

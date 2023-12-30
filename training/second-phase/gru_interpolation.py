@@ -23,8 +23,8 @@ def apply_model_to_data():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
 
-    # model = torch.load('../../trained-models/first-phase/gru.pth')
-    model = torch.load('generated-models/gru.pth')
+    model = torch.load('../../trained-models/second-phase/gru.pth')
+    # model = torch.load('generated-models/gru.pth')
 
     model.to(device)
 
