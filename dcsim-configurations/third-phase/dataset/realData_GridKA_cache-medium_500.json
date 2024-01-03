@@ -1,7 +1,7 @@
 {
   "Analysis_T2":{
     "location":"GridKA_dCache",
-    "num_files":5000,
+    "num_files":500,
     "filesize": {
         "type": "histogram",
         "counts": [456792, 10442, 1316, 6796, 581, 121, 91, 0, 19, 19],
@@ -10,7 +10,7 @@
   },
   "Digi_T2":{
     "location":"GridKA_dCache",
-    "num_files":5000,
+    "num_files":500,
     "filesize": {
         "type": "histogram",
         "counts": [323934, 2694, 91, 0, 0, 0, 0, 0, 0, 0],
@@ -19,7 +19,7 @@
   },
   "DataProcessing_T2":{
     "location":"GridKA_dCache",
-    "num_files":5000,
+    "num_files":500,
     "filesize": {
         "type":"histogram",
         "counts": [48846, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -28,7 +28,7 @@
   },
   "Others_T2":{
     "location":"GridKA_dCache",
-    "num_files":2500,
+    "num_files":250,
     "filesize": {
         "type":"histogram",
         "counts": [1733, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -37,7 +37,7 @@
   },
   "Merge_T2":{
     "location":"GridKA_dCache",
-    "num_files":2500,
+    "num_files":250,
     "filesize": {
         "type":"histogram",
         "counts": [18627, 0, 0, 0, 0, 0, 0, 0, 0, 0],
