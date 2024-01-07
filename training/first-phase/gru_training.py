@@ -50,10 +50,10 @@ def train_and_evaluate_model():
     start_time = time.time()
 
     # Load data
-    train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset.csv')
-    test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset.csv')
-    # train_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/train_dataset_small.csv')
-    # test_df = pd.read_csv('../../simulation-dataset-preparation/first-phase/test_dataset_small.csv')
+    train_df = pd.read_csv('../../dataset-preparation/first-phase/train_dataset.csv')
+    test_df = pd.read_csv('../../dataset-preparation/first-phase/test_dataset.csv')
+    # train_df = pd.read_csv('../../dataset-preparation/first-phase/train_dataset_small.csv')
+    # test_df = pd.read_csv('../../dataset-preparation/first-phase/test_dataset_small.csv')
 
     # Transform dataframes into overlapping windows
     input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
