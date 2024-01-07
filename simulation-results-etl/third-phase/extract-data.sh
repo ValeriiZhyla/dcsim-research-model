@@ -9,4 +9,5 @@ python extract-simulations.py --simulation_root_dir="D:\KIT\Master Thesis\simula
 python extract-simulations.py --simulation_root_dir="D:\KIT\Master Thesis\simulations\third_phase\third_phase_1500"
 python extract-simulations.py --simulation_root_dir="D:\KIT\Master Thesis\simulations\third_phase\third_phase_2000"
 
-python extract-simulations.py --simulation_root_dir="D:\KIT\Master Thesis\simulations\third_phase\third_phase_extrapolation"
+python extract-simulations.py --simulation_root_dir="D:\KIT\Master Thesis\simulations\third_phase\third_phase_extrapolation_x5"
+python extract-simulations.py --simulation_root_dir="D:\KIT\Master Thesis\simulations\third_phase\third_phase_extrapolation_x10"

@@ -4,9 +4,9 @@ import torch
 from torch.utils.data import DataLoader
 
 import commons
-from gru_training import BiGRUModel, model_name, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, plot_color
+from transformer_training import TransformerModel, model_name, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, plot_color
 
-train_df = pd.read_csv('../../dataset-preparation/third-phase/extrapolation_dataset_x5.csv')
+train_df = pd.read_csv('../../dataset-preparation/third-phase/extrapolation_dataset_x10.csv')
 input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
 output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
 apply_data_windows = commons.create_windows(train_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns, output_columns=output_columns)
@@ -23,8 +23,8 @@ def apply_model_to_data():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
 
-    model = torch.load('../../trained-models/third-phase/gru.pth')
-    #model = torch.load('generated-models/gru.pth')
+    model = torch.load('../../trained-models/third-phase/transformer.pth')
+    # model = torch.load('generated-models/transformer.pth')
 
     model.to(device)
 
@@ -41,7 +41,7 @@ def apply_model_to_data():
             inputs, targets = inputs.to(device), targets.to(device)
 
             # Make a prediction
-            outputs = model(inputs)
+            outputs = model(inputs, targets)
 
             # Store predictions and actual values for further metrics calculations
             predictions.extend(outputs.cpu().numpy())
@@ -55,7 +55,7 @@ def apply_model_to_data():
     commons.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
 
     # Denormalize and plot results for each parameter
-    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name, color_name=plot_color, purpose="extrapolation")
+    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name, color_name=plot_color, purpose="extrapolation_x10")
 
 
 if __name__ == '__main__':

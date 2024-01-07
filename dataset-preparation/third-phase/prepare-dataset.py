@@ -17,7 +17,8 @@ DEFAULT_TEST_FILE_PATH = "./test_dataset.csv"
 DEFAULT_SMALL_TRAINING_FILE_PATH = "./train_dataset_small.csv"
 DEFAULT_SMALL_TEST_FILE_PATH = "./test_dataset_small.csv"
 
-DEFAULT_EXTRAPOLATION_FILE_PATH = "./extrapolation_dataset.csv"
+EXTRAPOLATION_X5_FILE_PATH = "./extrapolation_dataset_x5.csv"
+EXTRAPOLATION_X10_FILE_PATH = "./extrapolation_dataset_x10.csv"
 
 TEST_DATASET_SIZE = 0.3
 SEED = 42
@@ -92,8 +93,11 @@ def export_small_dataset(conn):
 
 
 def export_extrapolation_dataset(conn):
-    query = "SELECT * FROM simulated_jobs_extrapolation;"
-    export_dataset(query, conn, DEFAULT_EXTRAPOLATION_FILE_PATH)
+    query = "SELECT * FROM third_phase_simulated_jobs_extrapolation_x5;"
+    export_dataset(query, conn, EXTRAPOLATION_X5_FILE_PATH)
+
+    query = "SELECT * FROM third_phase_simulated_jobs_extrapolation_x10;"
+    export_dataset(query, conn, EXTRAPOLATION_X10_FILE_PATH)
 
 
 def main():
