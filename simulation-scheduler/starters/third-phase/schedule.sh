@@ -1,10 +1,13 @@
 # Start only one schedule-simulations.py, bad raise conditions otherwise
 
-nohup python -u schedule-simulations.py --script_to_start=starters/start_third_phase_5.sh --directory_to_check=third_phase_5 --total_simulations_number=20 --minutes_between_checks=1 > scheduler_third_phase_5.log 2> scheduler_third_phase_5_error.log &
-
-
-nohup python -u schedule-simulations.py --script_to_start=starters/start_third_phase_100.sh --directory_to_check=third_phase_100 --total_simulations_number=10 --minutes_between_checks=1 > scheduler_third_phase_100.log 2> scheduler_third_phase_100_error.log &
-nohup python -u schedule-simulations.py --script_to_start=starters/start_third_phase_500.sh --directory_to_check=third_phase_500 --total_simulations_number=10 --minutes_between_checks=1 > scheduler_third_phase_500.log 2> scheduler_third_phase_500_error.log &
-
-
+nohup python -u schedule-simulations.py --script_to_start=starters/start_third_phase_5.sh --directory_to_check=third_phase_5 --total_simulations_number=1000 --minutes_between_checks=1 > scheduler_third_phase_5.log 2> scheduler_third_phase_5_error.log &
+nohup python -u schedule-simulations.py --script_to_start=starters/start_third_phase_10.sh --directory_to_check=third_phase_10 --total_simulations_number=1000 --minutes_between_checks=1 > scheduler_third_phase_10.log 2> scheduler_third_phase_10_error.log &
+nohup python -u schedule-simulations.py --script_to_start=starters/start_third_phase_20.sh --directory_to_check=third_phase_20 --total_simulations_number=1000 --minutes_between_checks=1 > scheduler_third_phase_20.log 2> scheduler_third_phase_20_error.log &
+nohup python -u schedule-simulations.py --script_to_start=starters/start_third_phase_50.sh --directory_to_check=third_phase_50 --total_simulations_number=1000 --minutes_between_checks=1 > scheduler_third_phase_50.log 2> scheduler_third_phase_50_error.log &
+nohup python -u schedule-simulations.py --script_to_start=starters/start_third_phase_100.sh --directory_to_check=third_phase_100 --total_simulations_number=1000 --minutes_between_checks=1 > scheduler_third_phase_100.log 2> scheduler_third_phase_100_error.log &
+nohup python -u schedule-simulations.py --script_to_start=starters/start_third_phase_250.sh --directory_to_check=third_phase_250 --total_simulations_number=1000 --minutes_between_checks=1 > scheduler_third_phase_250.log 2> scheduler_third_phase_250_error.log &
+nohup python -u schedule-simulations.py --script_to_start=starters/start_third_phase_500.sh --directory_to_check=third_phase_500 --total_simulations_number=1000 --minutes_between_checks=1 > scheduler_third_phase_500.log 2> scheduler_third_phase_500_error.log &
+nohup python -u schedule-simulations.py --script_to_start=starters/start_third_phase_1000.sh --directory_to_check=third_phase_1000 --total_simulations_number=1000 --minutes_between_checks=1 > scheduler_third_phase_1000.log 2> scheduler_third_phase_1000_error.log &
+nohup python -u schedule-simulations.py --script_to_start=starters/start_third_phase_1500.sh --directory_to_check=third_phase_1500 --total_simulations_number=1000 --minutes_between_checks=1 > scheduler_third_phase_1500.log 2> scheduler_third_phase_1500_error.log &
 nohup python -u schedule-simulations.py --script_to_start=starters/start_third_phase_2000.sh --directory_to_check=third_phase_2000 --total_simulations_number=1000 --minutes_between_checks=1 > scheduler_third_phase_2000.log 2> scheduler_third_phase_2000_error.log &
+
