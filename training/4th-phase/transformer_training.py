@@ -8,7 +8,8 @@ from torch import nn
 from torch.nn import init
 from torch.utils.data import DataLoader
 
-import commons
+import plotting
+import windowing
 
 # Constants
 NUM_EPOCHS = 100
@@ -27,33 +28,51 @@ plot_color = seaborn.color_palette("deep")[4]  # deep purple
 
 
 
-class TransformerModelWithAuxInput(nn.Module):
-    def __init__(self, input_size, aux_input_size, hidden_size, output_size, nhead, num_encoder_layers, num_decoder_layers):
-        super(TransformerModelWithAuxInput, self).__init__()
-        # Linear layers to project source, auxiliary, and target features to hidden dimension
-        self.src_input_projection = nn.Linear(input_size, hidden_size)
-        self.aux_input_projection = nn.Linear(aux_input_size, hidden_size)
+class TransformerModelWithTwoAuxEncoders(nn.Module):
+    def __init__(self, jobs_src_input_size, nodes_aux_input_size, links_input_size, hidden_size, output_size, nhead, num_encoder_layers, num_decoder_layers):
+        super(TransformerModelWithTwoAuxEncoders, self).__init__()
+        # Linear layers to project source, two auxiliary, and target features to hidden dimension
+        self.jobs_src_input_projection = nn.Linear(jobs_src_input_size, hidden_size)
+        self.nodes_aux_input_projection = nn.Linear(nodes_aux_input_size, hidden_size)
+        self.links_aux_input_projection = nn.Linear(links_input_size, hidden_size)
         self.tgt_input_projection = nn.Linear(output_size, hidden_size)
 
-        # Transformer layer
-        self.transformer = nn.Transformer(d_model=hidden_size, nhead=nhead,
-                                          num_encoder_layers=num_encoder_layers,
-                                          num_decoder_layers=num_decoder_layers,
-                                          batch_first=True)
+        # Separate encoders for source and two auxiliary sequences
+        self.jobs_src_encoder_layer = nn.TransformerEncoderLayer(d_model=hidden_size, nhead=nhead)
+        self.jobs_src_encoder = nn.TransformerEncoder(self.jobs_src_encoder_layer, num_layers=num_encoder_layers)
+
+        self.nodes_aux_encoder_layer = nn.TransformerEncoderLayer(d_model=hidden_size, nhead=nhead)
+        self.nodes_aux_encoder = nn.TransformerEncoder(self.nodes_aux_encoder_layer, num_layers=num_encoder_layers)
+
+        self.links_aux_encoder_layer = nn.TransformerEncoderLayer(d_model=hidden_size, nhead=nhead)
+        self.links_aux_encoder = nn.TransformerEncoder(self.links_aux_encoder_layer, num_layers=num_encoder_layers)
+
+        # Transformer decoder layer
+        self.transformer_decoder_layer = nn.TransformerDecoderLayer(d_model=hidden_size, nhead=nhead)
+        self.decoder = nn.TransformerDecoder(self.transformer_decoder_layer, num_layers=num_decoder_layers)
+
         # Linear layer to project from hidden dimension to output size
         self.output_projection = nn.Linear(hidden_size, output_size)
 
-    def forward(self, src, aux, tgt):
-        # Project input to hidden size
-        src = self.src_input_projection(src)
-        aux = self.aux_input_projection(aux)
+    def forward(self, jobs, nodes, links, tgt):
+        # Project to hidden size
+        jobs = self.jobs_src_input_projection(jobs)
+        nodes = self.nodes_aux_input_projection(nodes)
+        links = self.links_aux_input_projection(links)
         tgt = self.tgt_input_projection(tgt)
 
-        # Concatenate source and auxiliary sequence along the feature dimension
-        combined_src = torch.cat((src, aux), dim=-1)
+        # Encode source and auxiliary sequences separately
+        encoded_jobs_src = self.jobs_src_encoder(jobs)
+        encoded_nodes_aux = self.nodes_aux_encoder(nodes)
+        encoded_links_aux = self.links_aux_encoder(links)
 
-        # Transformer processing
-        output = self.transformer(combined_src, tgt)
+        # Combine encoded source and both auxiliary sequences
+        # Combine the encoded representations
+        combined = torch.cat([encoded_jobs_src, encoded_nodes_aux, encoded_links_aux], dim=-1)
+        combined = self.combination_layer(combined)  # Combination layer (e.g., linear)
+
+        # Use combined memory for the decoder, and target for queries
+        output = self.decoder(tgt, combined)
 
         # Project output to target size
         return self.output_projection(output)
@@ -74,15 +93,15 @@ def train_and_evaluate_model():
 
     input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
     output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
-    train_windows = commons.create_windows(train_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns, output_columns=output_columns)
-    test_windows = commons.create_windows(test_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns, output_columns=output_columns)
+    train_windows = windowing.create_windows(train_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns, output_columns=output_columns)
+    test_windows = windowing.create_windows(test_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns, output_columns=output_columns)
 
     # Fit the scalers on the whole training dataset
-    input_scaler, output_scaler = commons.create_and_fit_scalers(train_df, input_columns, output_columns)
+    input_scaler, output_scaler = windowing.create_and_fit_scalers(train_df, input_columns, output_columns)
 
     # Prepare datasets
-    train_dataset = commons.scale_and_reshape_windows(train_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
-    test_dataset = commons.scale_and_reshape_windows(test_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
+    train_dataset = windowing.scale_and_reshape_windows(train_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
+    test_dataset = windowing.scale_and_reshape_windows(test_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
 
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
@@ -156,10 +175,10 @@ def train_and_evaluate_model():
     actual_values_array = np.vstack(actual_values)
 
     # Calculate metrics for each output parameter and show them
-    commons.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
+    plotting.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
 
     # Denormalize and plot results for each parameter
-    commons.denorm_and_plot_predicted_actual(output_columns, output_scaler, predictions_array, actual_values_array, model_name, purpose="training")
+    plotting.denorm_and_plot_predicted_actual(output_columns, output_scaler, predictions_array, actual_values_array, model_name, purpose="training")
 
     return model
 
