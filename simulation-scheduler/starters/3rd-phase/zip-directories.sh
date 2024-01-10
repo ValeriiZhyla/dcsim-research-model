@@ -1,0 +1,5 @@
+zip -r third_phase_archive.zip third_phase_5 third_phase_10 third_phase_20 third_phase_50 third_phase_100 third_phase_250 third_phase_500 third_phase_1000 third_phase_1500 third_phase_2000
+
+zip -r third_phase_archive_extrapolation_x5.zip third_phase_extrapolation_x5
+zip -r third_phase_archive_extrapolation_x10.zip third_phase_extrapolation_x10
+zip -r third_phase_archive_extrapolation_x20.zip third_phase_extrapolation_x20
