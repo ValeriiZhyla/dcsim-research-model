@@ -239,8 +239,8 @@ class SimulationDirectory:
             cursor.execute(insert_job_query, (
                 self.uuid,  # Convert string to UUID
                 position_in_batch,  # position in batch, start with
-                tag,
-                machine_name,
+                tag.strip(),
+                machine_name.strip(),
                 float(hit_rate),
                 float(job_start),
                 float(job_end),

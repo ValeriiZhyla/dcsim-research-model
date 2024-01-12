@@ -6,7 +6,7 @@ import seaborn
 import torch
 from torch import nn
 from torch.nn import init
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 
 import plotting
 import windowing
@@ -16,16 +16,15 @@ NUM_EPOCHS = 100
 WINDOW_SIZE = 500
 WINDOW_OVERLAP_SIZE = 250
 BATCH_SIZE = 32
-HIDDEN_LAYERS = 15  # 8 hidden layers produce NaN loss, 5 Produces good results, 10 produces very good results
-INPUT_SIZE = 4
-OUTPUT_SIZE = 5
+HIDDEN_LAYERS = 20  # 8 hidden layers produce NaN loss, 5 Produces good results, 10 produces very good results
+INPUT_SIZE = 5
+OUTPUT_SIZE = 6
 NHEADS = 1  # Ensure this is a divisor of HIDDEN_LAYERS
 NUM_ENCODER_LAYERS = 2
 NUM_DECODER_LAYERS = 2
 
 model_name = "Transformer"
 plot_color = seaborn.color_palette("deep")[4]  # deep purple
-
 
 
 class TransformerModelWithTwoAuxEncoders(nn.Module):
@@ -47,12 +46,17 @@ class TransformerModelWithTwoAuxEncoders(nn.Module):
         self.links_aux_encoder_layer = nn.TransformerEncoderLayer(d_model=hidden_size, nhead=nhead)
         self.links_aux_encoder = nn.TransformerEncoder(self.links_aux_encoder_layer, num_layers=num_encoder_layers)
 
+        # Combination layer
+        self.combination_layer = nn.Linear(hidden_size * 3, hidden_size)
+
+
         # Transformer decoder layer
         self.transformer_decoder_layer = nn.TransformerDecoderLayer(d_model=hidden_size, nhead=nhead)
         self.decoder = nn.TransformerDecoder(self.transformer_decoder_layer, num_layers=num_decoder_layers)
 
         # Linear layer to project from hidden dimension to output size
         self.output_projection = nn.Linear(hidden_size, output_size)
+
 
     def forward(self, jobs, nodes, links, tgt):
         # Project to hidden size
@@ -77,6 +81,23 @@ class TransformerModelWithTwoAuxEncoders(nn.Module):
         # Project output to target size
         return self.output_projection(output)
 
+
+class CombinedDataset(Dataset):
+    def __init__(self, train_dataset, nodes_aux_data, links_aux_data):
+        self.train_dataset = train_dataset
+        self.nodes_aux_data = nodes_aux_data
+        self.links_aux_data = links_aux_data
+
+    def __len__(self):
+        return len(self.train_dataset)
+
+    def __getitem__(self, idx):
+        train_data, train_target = self.train_dataset[idx]
+        # Since nodes_aux_data and links_aux_data are single windows, use them as is
+        nodes_aux_data = self.nodes_aux_data.squeeze(0)  # Remove batch dimension if present
+        links_aux_data = self.links_aux_data.squeeze(0)  # Remove batch dimension if present
+        return train_data, nodes_aux_data, links_aux_data, train_target
+
 def train_and_evaluate_model():
     # Define the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -85,32 +106,55 @@ def train_and_evaluate_model():
     # Start timer
     start_time = time.time()
 
-    # Load data
-    train_df = pd.read_csv('../../dataset-preparation/3rd-phase/train_dataset.csv')
-    test_df = pd.read_csv('../../dataset-preparation/3rd-phase/test_dataset.csv')
-    #train_df = pd.read_csv('../../dataset-preparation/3rd-phase/train_dataset_small.csv')
-    #test_df = pd.read_csv('../../dataset-preparation/3rd-phase/test_dataset_small.csv')
+    # Load dataframes
+    train_df = pd.read_csv('../../dataset-preparation/4th-phase/main-dataset/train_dataset_extended.csv')
+    test_df = pd.read_csv('../../dataset-preparation/4th-phase/main-dataset/test_dataset_extended.csv')
+    #train_df = pd.read_csv('../../dataset-preparation/4th-phase/train_dataset_small_extended.csv')
+    #test_df = pd.read_csv('../../dataset-preparation/4th-phase/test_dataset_small_extended.csv')
+    nodes_aux_df = pd.read_csv('../../dataset-preparation/4th-phase/main-dataset/nodes_aux.csv')
+    links_aux_df = pd.read_csv('../../dataset-preparation/4th-phase/main-dataset/links_aux.csv')
 
-    input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
-    output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
-    train_windows = windowing.create_windows(train_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns, output_columns=output_columns)
-    test_windows = windowing.create_windows(test_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns, output_columns=output_columns)
+    # Load jobs
+    input_columns_jobs = ['index', 'flops', 'input_files_size', 'output_files_size', 'dataset_node_index']
+    output_columns_jobs = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time', 'machine_index']
+
+    train_windows = windowing.create_windows_jobs(train_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns_jobs,
+                                                  output_columns=output_columns_jobs)
+    test_windows = windowing.create_windows_jobs(test_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns_jobs,
+                                                 output_columns=output_columns_jobs)
+
+    # Load aux data
+    nodes_columns = ['index', 'type_index', 'speed_mf', 'cores', 'ram_gib', 'disk_tib', 'disk_read_bw_mbps', 'disk_write_bw_mbps', 'in_cluster']
+    links_columns = ['link_index', 'src_node_index', 'dst_node_index', 'bandwidth_mbps', 'latency_us', 'is_fatpipe']
+    nodes_aux_df = nodes_aux_df[nodes_columns]
+    links_aux_df = links_aux_df[links_columns]
+    nodes_aux_windows = windowing.pad_window_aux(nodes_aux_df, window_size=WINDOW_SIZE, columns=nodes_columns)
+    links_aux_windows = windowing.pad_window_aux(links_aux_df, window_size=WINDOW_SIZE, columns=links_columns)
 
     # Fit the scalers on the whole training dataset
-    input_scaler, output_scaler = windowing.create_and_fit_scalers(train_df, input_columns, output_columns)
+    input_jobs_scaler = windowing.create_and_fit_scaler(train_df, input_columns_jobs)
+    output_jobs_scaler = windowing.create_and_fit_scaler(train_df, output_columns_jobs)
+    nodes_scaler = windowing.create_and_fit_scaler(nodes_aux_df, nodes_columns)
+    links_scaler = windowing.create_and_fit_scaler(links_aux_df, links_columns)
 
     # Prepare datasets
-    train_dataset = windowing.scale_and_reshape_windows(train_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
-    test_dataset = windowing.scale_and_reshape_windows(test_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
+    train_dataset = windowing.scale_and_reshape_jobs_windows(train_windows, WINDOW_SIZE, input_jobs_scaler, output_jobs_scaler, input_columns_jobs, output_columns_jobs)
+    test_dataset = windowing.scale_and_reshape_jobs_windows(test_windows, WINDOW_SIZE, input_jobs_scaler, output_jobs_scaler, input_columns_jobs, output_columns_jobs)
+    nodes_aux_dataset = windowing.scale_and_reshape_aux_windows(nodes_aux_windows, WINDOW_SIZE, nodes_scaler, nodes_columns)
+    links_aux_dataset = windowing.scale_and_reshape_aux_windows(links_aux_windows, WINDOW_SIZE, links_scaler, links_columns)
 
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+    train_dataset_jobs_with_aux = CombinedDataset(train_dataset, nodes_aux_dataset, links_aux_dataset)
+    test_dataset_jobs_with_aux = CombinedDataset(test_dataset, nodes_aux_dataset, links_aux_dataset)
+
+    train_loader = DataLoader(train_dataset_jobs_with_aux, batch_size=BATCH_SIZE, shuffle=True)
+    test_loader = DataLoader(test_dataset_jobs_with_aux, batch_size=BATCH_SIZE, shuffle=False)
 
     # Initialize the model
-    model = TransformerModel(input_size=INPUT_SIZE, hidden_size=HIDDEN_LAYERS,
-                             output_size=OUTPUT_SIZE, nhead=NHEADS,
-                             num_encoder_layers=NUM_ENCODER_LAYERS,
-                             num_decoder_layers=NUM_DECODER_LAYERS).to(device)
+    model = TransformerModelWithTwoAuxEncoders(jobs_src_input_size=INPUT_SIZE, nodes_aux_input_size=len(nodes_columns), links_input_size=len(links_columns),
+                                               hidden_size=HIDDEN_LAYERS,
+                                               output_size=OUTPUT_SIZE, nhead=NHEADS,
+                                               num_encoder_layers=NUM_ENCODER_LAYERS,
+                                               num_decoder_layers=NUM_DECODER_LAYERS).to(device)
 
     criterion = nn.MSELoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.001)  # most accurate results so far for 0.001
@@ -120,20 +164,30 @@ def train_and_evaluate_model():
     model.train()  # Set the model to training mode
     for epoch in range(NUM_EPOCHS):
         total_loss = 0
-        for inputs, targets in train_loader:
-            inputs, targets = inputs.to(device), targets.to(device)
+        for batch in train_loader:
+            # Unpack the batch data
+            train_data, nodes_aux_data, links_aux_data, train_target = batch
+
+            # Move data to the device
+            train_data = train_data.to(device)
+            nodes_aux_data = nodes_aux_data.to(device)
+            links_aux_data = links_aux_data.to(device)
+            train_target = train_target.to(device)
+
+            # Zero the parameter gradients
             optimizer.zero_grad()
 
             # Forward pass
-            outputs = model(inputs, targets)
-            loss = criterion(outputs, targets)
+            outputs = model(train_data, nodes_aux_data, links_aux_data, train_target)
+            loss = criterion(outputs, train_target)
+
             # Backward pass
             loss.backward()
-
             # It helps, nan otherwise
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Gradient clipping
             optimizer.step()
 
+            # Accumulate loss
             total_loss += loss.item()
         avg_loss = total_loss / len(train_loader)
         print(f'Epoch [{epoch + 1}/{NUM_EPOCHS}], Average Loss: {avg_loss}')
@@ -159,26 +213,32 @@ def train_and_evaluate_model():
     actual_values = []
 
     with torch.no_grad():
-        for inputs, targets in test_loader:
+        for batch in test_loader:
+            # Unpack the batch data
+            train_data, nodes_aux_data, links_aux_data, train_target = batch
+
             # Move data to the device
-            inputs, targets = inputs.to(device), targets.to(device)
+            train_data = train_data.to(device)
+            nodes_aux_data = nodes_aux_data.to(device)
+            links_aux_data = links_aux_data.to(device)
+            train_target = train_target.to(device)
 
             # Make a prediction
-            outputs = model(inputs, targets)
+            outputs = model(train_data, nodes_aux_data, links_aux_data, train_target)
 
             # Store predictions and actual values for further metrics calculations
             predictions.extend(outputs.cpu().numpy())
-            actual_values.extend(targets.cpu().numpy())
+            actual_values.extend(train_target.cpu().numpy())
 
     # Convert lists of arrays to single numpy arrays
     predictions_array = np.vstack(predictions)
     actual_values_array = np.vstack(actual_values)
 
     # Calculate metrics for each output parameter and show them
-    plotting.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
+    plotting.calculate_and_show_metrics(output_columns_jobs, predictions_array, actual_values_array)
 
     # Denormalize and plot results for each parameter
-    plotting.denorm_and_plot_predicted_actual(output_columns, output_scaler, predictions_array, actual_values_array, model_name, purpose="training")
+    plotting.denorm_and_plot_predicted_actual(output_columns_jobs, output_jobs_scaler, predictions_array, actual_values_array, model_name, purpose="training")
 
     return model
 

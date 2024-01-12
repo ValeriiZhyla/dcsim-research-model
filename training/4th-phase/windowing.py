@@ -13,7 +13,7 @@ def pad_sequence(seq, window_size, padding_value=0):
     return np.pad(seq, ((0, pad_length), (0, 0)), mode='constant', constant_values=padding_value)
 
 
-def create_windows(df, window_size, overlap_size, input_columns, output_columns):
+def create_windows_jobs(df, window_size, overlap_size, input_columns, output_columns):
     windowed_data = []
 
     # Group by simulation_id
@@ -44,8 +44,24 @@ def create_windows(df, window_size, overlap_size, input_columns, output_columns)
                 windowed_data.append((input_data, output_data))
     return windowed_data
 
+def pad_window_aux(df, window_size, columns):
+    # Calculate the number of rows to pad
+    pad_rows = window_size - len(df)
 
-def scale_and_reshape_windows(windowed_data, window_size, input_scaler, output_scaler, input_columns, output_columns):
+    # Check if padding is necessary
+    if pad_rows > 0:
+        # Create a padding array of zeros
+        padding = np.zeros((pad_rows, len(columns)))
+        # Append the padding to the sequence
+        padded_sequence = np.vstack((df, padding))
+    else:
+        # No padding needed, just truncate the sequence
+        padded_sequence = df[:window_size]
+
+    return padded_sequence
+
+
+def scale_and_reshape_jobs_windows(windowed_data, window_size, input_scaler, output_scaler, input_columns, output_columns):
     inputs, outputs = zip(*windowed_data)
 
     # Flatten, scale, and un-flatten inputs
@@ -65,14 +81,25 @@ def scale_and_reshape_windows(windowed_data, window_size, input_scaler, output_s
     return TensorDataset(inputs_tensor, outputs_tensor)
 
 
-def create_and_fit_scalers(df, input_columns, output_columns):
-    input_scaler = StandardScaler()
-    output_scaler = StandardScaler()
+def scale_and_reshape_aux_windows(windowed_data, window_size, scaler, aux_columns):
+    # This function assumes windowed_data is already segmented into windows
+    aux_data = np.array(windowed_data)
 
-    input_features = df[input_columns].values
-    output_features = df[output_columns].values
+    # Flatten, scale, and un-flatten aux data
+    aux_flattened = aux_data.reshape(-1, len(aux_columns))
+    aux_scaled = scaler.transform(aux_flattened)
+    aux_3d = aux_scaled.reshape(-1, window_size, len(aux_columns))
 
-    input_scaler.fit(input_features)
-    output_scaler.fit(output_features)
+    # Convert to tensors
+    aux_tensor = torch.tensor(aux_3d, dtype=torch.float32)
+    return aux_tensor
 
-    return input_scaler, output_scaler
+
+def create_and_fit_scaler(df, columns):
+    scaler = StandardScaler()
+
+    features = df[columns].values
+
+    scaler.fit(features)
+
+    return scaler

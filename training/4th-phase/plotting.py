@@ -44,17 +44,19 @@ def show_metrics(output_columns, mse_per_param, mae_per_param, rmse_per_param, r
         print("=================================")
 
 
-def denorm_and_plot_predicted_actual(output_columns, output_scaler, predictions_array, actual_values_array, model_name, max_points=10000000, color_name="blue", purpose=None, add_help_line=True):
+def denorm_and_plot_predicted_actual(output_columns, output_scaler, predictions_array, actual_values_array, model_name, max_points=1000000, color_name="blue", purpose=None, add_help_line=True):
     # Scale back to original values for readable plots
-    denorm_predictions_array = output_scaler.inverse_transform(predictions_array)
-    denorm_actual_values_array = output_scaler.inverse_transform(actual_values_array)
-
-    # Check if the number of points is more than max_points
     if len(predictions_array) > max_points:
+        # Check if the number of points is more than max_points
         # Randomly select max_points indices
         indices = np.random.choice(len(predictions_array), size=max_points, replace=False)
-        denorm_predictions_array = denorm_predictions_array[indices]
-        denorm_actual_values_array = denorm_actual_values_array[indices]
+        random_sample_predictions_array = predictions_array[indices]
+        random_sample_actual_values_array = actual_values_array[indices]
+        denorm_predictions_array = output_scaler.inverse_transform(random_sample_predictions_array)
+        denorm_actual_values_array = output_scaler.inverse_transform(random_sample_actual_values_array)
+    else:
+        denorm_predictions_array = output_scaler.inverse_transform(predictions_array)
+        denorm_actual_values_array = output_scaler.inverse_transform(actual_values_array)
 
     seaborn.set_style("whitegrid")
 
