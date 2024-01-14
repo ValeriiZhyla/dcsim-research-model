@@ -107,12 +107,12 @@ def train_and_evaluate_model():
     start_time = time.time()
 
     # Load dataframes
-    train_df = pd.read_csv('../../dataset-preparation/4th-phase/main-dataset/train_dataset_extended.csv')
-    test_df = pd.read_csv('../../dataset-preparation/4th-phase/main-dataset/test_dataset_extended.csv')
+    train_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/train_dataset_extended.csv')
+    test_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/test_dataset_extended.csv')
     #train_df = pd.read_csv('../../dataset-preparation/4th-phase/train_dataset_small_extended.csv')
     #test_df = pd.read_csv('../../dataset-preparation/4th-phase/test_dataset_small_extended.csv')
-    nodes_aux_df = pd.read_csv('../../dataset-preparation/4th-phase/main-dataset/nodes_aux.csv')
-    links_aux_df = pd.read_csv('../../dataset-preparation/4th-phase/main-dataset/links_aux.csv')
+    nodes_aux_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/nodes_aux.csv')
+    links_aux_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/links_aux.csv')
 
     # Load jobs
     input_columns_jobs = ['index', 'flops', 'input_files_size', 'output_files_size', 'dataset_node_index']
