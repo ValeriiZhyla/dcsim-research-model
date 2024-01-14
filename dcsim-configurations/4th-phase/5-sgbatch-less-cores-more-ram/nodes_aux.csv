@@ -1,0 +1,7 @@
+name;index;type;type_index;speed_mf;cores;ram_gib;disk_tib;disk_read_bw_mbps;disk_write_bw_mbps;in_cluster
+sg01;1;worker;1;1117;16;512;2,5;9600;9600;0
+sg02;2;worker;1;1117;12;256;2,5;9600;9600;0
+sg03;3;worker;1;1258;8;128;2,5;9600;9600;0
+WMSHost;4;scheduler;3;10000;10;16;0;0;0;0
+RemoteStorage;5;storage;2;1000000;10;0;1024;40000;40000;0
+etpgateway;6;router;4;0;0;0;0;0;0;0

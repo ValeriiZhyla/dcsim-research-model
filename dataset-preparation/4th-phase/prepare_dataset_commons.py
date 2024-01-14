@@ -47,7 +47,7 @@ def add_job_node_index(df, nodes_df):
     return df
 
 
-def get_dataset(platform, workload_prefix, dataset_prefix, simulations_of_each_length, exclude_simulations=None):
+def get_dataset(platform, workload_prefix, dataset_prefix, simulations_of_each_length, exclude_simulations=None, table_simulated_jobs="simulated_jobs"):
     if exclude_simulations is None:
         exclude_simulations = []
 
@@ -57,8 +57,8 @@ def get_dataset(platform, workload_prefix, dataset_prefix, simulations_of_each_l
     # Read dataset
     query = (
         f"SELECT simulation_id, position_in_batch, tag, machine_name, hit_rate, job_start, job_end, compute_time, flops, input_files_transfer_time, input_files_size, output_files_transfer_time, output_files_size "
-        f"FROM second_phase_simulated_jobs "
-        f"JOIN simulations ON second_phase_simulated_jobs.simulation_id = simulations.id "
+        f"FROM {table_simulated_jobs} "
+        f"JOIN simulations ON {table_simulated_jobs}.simulation_id = simulations.id "
         f"WHERE simulations.platform_config_name = '{platform}' "
         f"AND simulations.dataset_config_name LIKE '{dataset_prefix}%' "
         f"AND simulations.workload_config_name LIKE '{workload_prefix}%';")
