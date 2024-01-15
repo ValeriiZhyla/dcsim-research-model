@@ -1,6 +1,6 @@
 ID="13-kit_desy-cache-moved-to-desy-faster-cores-mf-everywhere"
 PATH_PREFIX="dcsim-configurations/4th-phase/${ID}"
-PLATFORM="${PATH_PREFIX}/platform/WLCG_disklessTier2_reduced100-less-cores-and-ram-in-kit.xml"
+PLATFORM="${PATH_PREFIX}/platform/WLCG_disklessTier2_reduced100-storage-cache-switched-more-mf-cores.xml"
 DATASET="${PATH_PREFIX}/dataset/realData_DESY_cache-large_2000.json"
 WORKLOAD_DIR="${PATH_PREFIX}/workload"
 WORKLOAD_PREFIX="T2_DE_DESY_workloads_"

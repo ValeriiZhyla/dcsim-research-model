@@ -1,6 +1,6 @@
 ID="12-kit_desy-cache-moved-to-desy"
 PATH_PREFIX="dcsim-configurations/4th-phase/${ID}"
-PLATFORM="${PATH_PREFIX}/platform/WLCG_disklessTier2_reduced100.xml"
+PLATFORM="${PATH_PREFIX}/platform/WLCG_disklessTier2_reduced100-storage-is-cache-and-cache-is-storage.xml"
 DATASET="${PATH_PREFIX}/dataset/realData_DESY_cache-large_2000.json"
 WORKLOAD_DIR="${PATH_PREFIX}/workload"
 WORKLOAD_PREFIX="T2_DE_DESY_workloads_"

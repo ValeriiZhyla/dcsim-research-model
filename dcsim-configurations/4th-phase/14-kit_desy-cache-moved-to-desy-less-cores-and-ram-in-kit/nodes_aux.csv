@@ -11,7 +11,7 @@ Tier17;9;worker;1;2555;16;256;0;0;0;1
 Tier18;10;worker;1;2555;16;256;0;0;0;1
 Tier19;11;worker;1;2555;16;256;0;0;0;1
 Tier2;12;worker;1;2209;200;500;0;0;0;0
-GridKA_dCache;13;storage;2;1000000;6;0;7000;920;920;0
+GridKA_dCache;13;cache;5;1000000;6;0;7000;920;920;0
 WMSHost;14;scheduler;3;10000;6;8;0;0;0;0
 GridKAgateway;15;router;4;0;0;0;0;0;0;0
 KITgateway;16;router;4;0;0;0;0;0;0;0
