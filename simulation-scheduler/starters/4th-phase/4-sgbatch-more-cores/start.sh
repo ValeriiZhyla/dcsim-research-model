@@ -1,4 +1,4 @@
-ID="3-sgbatch-low-link-bandwidth-medium-latency-complex-jobs"
+ID="4-sgbatch-more-cores-complex-jobs"
 PATH_PREFIX="dcsim-configurations/4th-phase/${ID}"
 PLATFORM="${PATH_PREFIX}/platform/sgbatch-more-cores.xml"
 DATASET="${PATH_PREFIX}/dataset/realData_RemoteStorage.json"

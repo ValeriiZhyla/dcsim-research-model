@@ -3,7 +3,7 @@
     "location": [
       "RemoteStorage"
     ],
-    "num_files": 1000000,
+    "num_files": 20000,
     "filesize": {
       "type": "gaussian",
       "average": 500000000,

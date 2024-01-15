@@ -1,6 +1,6 @@
-ID="5-sgbatch-less-cores-more-ram"
+ID="7-sgbatch-one-host-less"
 PATH_PREFIX="dcsim-configurations/4th-phase/${ID}"
-PLATFORM="${PATH_PREFIX}/platform/sgbatch-less-cores-more-ram.xml"
+PLATFORM="${PATH_PREFIX}/platform/sgbatch-one-host-less.xml"
 DATASET="${PATH_PREFIX}/dataset/realData_RemoteStorage.json"
 WORKLOAD_DIR="${PATH_PREFIX}/workload"
 WORKLOAD_PREFIX="T1_DE_KIT_workloads_"

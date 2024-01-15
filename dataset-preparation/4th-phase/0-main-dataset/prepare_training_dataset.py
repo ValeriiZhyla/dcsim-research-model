@@ -12,7 +12,7 @@ import prepare_dataset_commons as pdc
 DATASET_LOCATION_INDEX = 13
 NODES_FILE = 'nodes_aux.csv'
 
-PLATFORM_FILE_NAME = 'WLCG_disklessTier2_reduced100.xml'
+PLATFORM_FILE_NAME = 'WLCG_disklessTier2_reduced100-no-fatpipes.xml'
 WORKLOAD_FILE_NAME_PREFIX = 'T2_DE_DESY_workloads'
 DATASET_FILE_NAME_PREFIX = 'realData_GridKA_cache'
 

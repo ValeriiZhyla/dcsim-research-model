@@ -1,9 +1,9 @@
-ID="5-sgbatch-less-cores-more-ram"
+ID="9-kit_desy-no-fatpipes"
 PATH_PREFIX="dcsim-configurations/4th-phase/${ID}"
-PLATFORM="${PATH_PREFIX}/platform/sgbatch-less-cores-more-ram.xml"
-DATASET="${PATH_PREFIX}/dataset/realData_RemoteStorage.json"
+PLATFORM="${PATH_PREFIX}/platform/WLCG_disklessTier2_reduced100-no-fatpipes.xml"
+DATASET="${PATH_PREFIX}/dataset/realData_GridKA_cache-large_2000.json"
 WORKLOAD_DIR="${PATH_PREFIX}/workload"
-WORKLOAD_PREFIX="T1_DE_KIT_workloads_"
+WORKLOAD_PREFIX="T2_DE_DESY_workloads_"
 WORKLOAD_SUFFIX=".json"
 BATCH_LENGTHS=(5 10 20 50 100 250 500 1000 1500 2000)
 
