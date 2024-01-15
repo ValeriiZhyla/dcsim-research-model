@@ -1,6 +1,6 @@
-ID="10-kit_desy-high-link-bandwidth"
+ID="11-kit_desy-less-cores-everywhere"
 PATH_PREFIX="dcsim-configurations/4th-phase/${ID}"
-PLATFORM="${PATH_PREFIX}/platform/WLCG_disklessTier2_reduced100-high-link-bandwidth.xml"
+PLATFORM="${PATH_PREFIX}/platform/WLCG_disklessTier2_reduced100-less-cores.xml"
 DATASET="${PATH_PREFIX}/dataset/realData_GridKA_cache-large_2000.json"
 WORKLOAD_DIR="${PATH_PREFIX}/workload"
 WORKLOAD_PREFIX="T2_DE_DESY_workloads_"
