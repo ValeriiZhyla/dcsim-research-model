@@ -12,4 +12,3 @@ for LEN in "${BATCH_LENGTHS[@]}"; do
     SIMULATION_DIR="${ID}/${LEN}"
     python start-simulations.py --simulations_number=10 --simulation_root_dir="$SIMULATION_DIR" --max_simulation_duration_hours=25 --platform_file="$PLATFORM" --dataset_file="$DATASET" --workload_file="$WORKLOAD"
 done
-

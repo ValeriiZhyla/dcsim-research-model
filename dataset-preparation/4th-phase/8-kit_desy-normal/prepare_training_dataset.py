@@ -9,12 +9,12 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import prepare_dataset_commons as pdc
 
 # Configuration
-DATASET_LOCATION_INDEX = 5
+DATASET_LOCATION_INDEX = 13
 NODES_FILE = 'nodes_aux.csv'
 
-PLATFORM_FILE_NAME = 'sgbatch.xml'
-WORKLOAD_FILE_NAME_PREFIX = 'T1_DE_KIT_workloads'
-DATASET_FILE_NAME_PREFIX = 'realData_RemoteStorage'
+PLATFORM_FILE_NAME = 'WLCG_disklessTier2_reduced100.xml'
+WORKLOAD_FILE_NAME_PREFIX = 'T2_DE_DESY_workloads_'
+DATASET_FILE_NAME_PREFIX = 'realData_GridKA_cache-large_'
 
 SIMULATIONS_OF_EACH_LENGTH_TRAINING = 7
 SIMULATIONS_OF_EACH_LENGTH_TEST = 3
@@ -25,7 +25,7 @@ OUTPUT_TEST_FILE = "test_dataset.csv"
 # Retrieve train and test dataset
 train_df_original = pdc.get_dataset(platform=PLATFORM_FILE_NAME, workload_prefix=WORKLOAD_FILE_NAME_PREFIX, dataset_prefix=DATASET_FILE_NAME_PREFIX, simulations_of_each_length=SIMULATIONS_OF_EACH_LENGTH_TRAINING)
 train_simulations = pdc.get_all_unique_simulation_ids(train_df_original)
-test_df_original = pdc.get_dataset(platform=PLATFORM_FILE_NAME, workload_prefix=WORKLOAD_FILE_NAME_PREFIX, dataset_prefix=DATASET_FILE_NAME_PREFIX, simulations_of_each_length=SIMULATIONS_OF_EACH_LENGTH_TRAINING, exclude_simulations=train_simulations)
+test_df_original = pdc.get_dataset(platform=PLATFORM_FILE_NAME, workload_prefix=WORKLOAD_FILE_NAME_PREFIX, dataset_prefix=DATASET_FILE_NAME_PREFIX, simulations_of_each_length=SIMULATIONS_OF_EACH_LENGTH_TEST, exclude_simulations=train_simulations)
 
 # Add column with dataset location node
 train_df_with_dataset_location = pdc.add_dataset_node_index(train_df_original, node_index=DATASET_LOCATION_INDEX)

@@ -1,0 +1,5 @@
+link_name;link_index;src_node_name;src_node_index;dst_name;dst_node_index;bandwidth_mbps;latency_us;is_fatpipe
+etp_link0;1;etpgateway;6;WMSHost;4;6000;0;0
+etp_link1;2;etpgateway;6;sg01;1;6000;0;0
+etp_link3;3;etpgateway;6;sg03;3;6000;0;0
+etp_to_remote;4;etpgateway;6;RemoteStorage;5;10000;0;0

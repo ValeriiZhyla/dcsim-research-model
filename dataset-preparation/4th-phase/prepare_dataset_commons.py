@@ -78,15 +78,16 @@ def get_dataset(platform, workload_prefix, dataset_prefix, simulations_of_each_l
     # Count the number of simulations for each simulation_id
     df_sorted['simulation_length'] = df_sorted.groupby('simulation_id')['simulation_id'].transform('count')
 
-    # Select a specific number of simulations of each length randomly
-    df_selected_simulations = df_sorted.groupby('simulation_length').sample(n=simulations_of_each_length, replace=False)
-    # Print simulation_id and its corresponding length
-    for length, group in df_selected_simulations.groupby('simulation_length'):
-        print(f"Simulation Length {length} simulations: {group['simulation_id'].unique()}")
+    unique_simulations_with_length = df_sorted.groupby('simulation_id').agg({'simulation_length': 'first'}).reset_index()
 
-    unique_simulation_ids = df_selected_simulations['simulation_id'].unique()
+    sampled_simulations = pd.DataFrame()
+    for length, group in unique_simulations_with_length.groupby('simulation_length'):
+        sampled_group = group.sample(n=simulations_of_each_length)['simulation_id']
+        print(f"Simulation Length {length} -> {len(sampled_group)} simulations: {sampled_group.tolist()}")
+        assert len(sampled_group) == simulations_of_each_length
+        sampled_simulations = pd.concat([sampled_simulations, sampled_group])
 
-    df_sorted_filtered = df_sorted[df_sorted['simulation_id'].isin(unique_simulation_ids)]
+    df_sorted_filtered = df_sorted[df_sorted['simulation_id'].isin(sampled_simulations[0])]
     # Close the database connection
     conn.close()
 

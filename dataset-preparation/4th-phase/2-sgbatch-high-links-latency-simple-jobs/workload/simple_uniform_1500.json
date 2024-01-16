@@ -1,0 +1,31 @@
+{
+    "simple_uniform": {
+        "num_jobs": 1500,
+        "infiles_per_job": 10,
+        "cores": {
+            "type": "histogram",
+            "counts": [
+                0,
+                1
+            ]
+        },
+        "flops": {
+            "type": "gaussian",
+            "average": 2886000000000,
+            "sigma": 0
+        },
+        "memory": {
+            "type": "gaussian",
+            "average": 2000000000,
+            "sigma": 0
+        },
+        "outfilesize": {
+            "type": "gaussian",
+            "average": 16000000,
+            "sigma": 0
+        },
+        "workload_type": "streaming",
+        "submission_time": 0,
+        "infile_datasets": "simple_uniform"
+    }
+}
