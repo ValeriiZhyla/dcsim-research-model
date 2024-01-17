@@ -12,7 +12,7 @@ import prepare_dataset_commons as pdc
 DATASET_LOCATION_INDEX = 13
 NODES_FILE = 'nodes_aux.csv'
 
-PLATFORM_FILE_NAME = 'WLCG_disklessTier2_reduced100-no-fatpipes.xml'
+PLATFORM_FILE_NAME = 'WLCG_disklessTier2_reduced100.xml'
 WORKLOAD_FILE_NAME_PREFIX = 'T2_DE_DESY_workloads'
 DATASET_FILE_NAME_PREFIX = 'realData_GridKA_cache'
 
@@ -26,9 +26,9 @@ OUTPUT_EXTRAPOLATION_FILE = "extrapolation_dataset.csv"
 
 
 # Retrieve train and test dataset
-train_df_original = pdc.get_dataset(platform=PLATFORM_FILE_NAME, workload_prefix=WORKLOAD_FILE_NAME_PREFIX, dataset_prefix=DATASET_FILE_NAME_PREFIX, simulations_of_each_length=SIMULATIONS_OF_EACH_LENGTH_TRAINING)
+train_df_original = pdc.get_dataset(platform=PLATFORM_FILE_NAME, workload_prefix=WORKLOAD_FILE_NAME_PREFIX, dataset_prefix=DATASET_FILE_NAME_PREFIX, simulations_of_each_length=SIMULATIONS_OF_EACH_LENGTH_TRAINING, table_simulated_jobs="third_phase_simulated_jobs")
 train_simulations = pdc.get_all_unique_simulation_ids(train_df_original)
-test_df_original = pdc.get_dataset(platform=PLATFORM_FILE_NAME, workload_prefix=WORKLOAD_FILE_NAME_PREFIX, dataset_prefix=DATASET_FILE_NAME_PREFIX, simulations_of_each_length=SIMULATIONS_OF_EACH_LENGTH_TRAINING, exclude_simulations=train_simulations)
+test_df_original = pdc.get_dataset(platform=PLATFORM_FILE_NAME, workload_prefix=WORKLOAD_FILE_NAME_PREFIX, dataset_prefix=DATASET_FILE_NAME_PREFIX, simulations_of_each_length=SIMULATIONS_OF_EACH_LENGTH_TEST, exclude_simulations=train_simulations, table_simulated_jobs="third_phase_simulated_jobs")
 
 extrapolation_df_original = pdc.get_dataset(platform=PLATFORM_FILE_NAME, workload_prefix=WORKLOAD_FILE_NAME_PREFIX, dataset_prefix=DATASET_FILE_NAME_PREFIX, simulations_of_each_length=SIMULATIONS_OF_EACH_LENGTH_EXTRAPOLATION, table_simulated_jobs="third_phase_simulated_jobs_extrapolation_x20")
 

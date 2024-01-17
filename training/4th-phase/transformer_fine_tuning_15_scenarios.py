@@ -7,14 +7,14 @@ import torch
 from torch import nn
 from torch.nn import init
 from torch.utils.data import DataLoader, Dataset
-from transformer_initial_training import TransformerModelWithTwoAuxEncoders, CombinedDataset, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE
+from transformer_initial_training_batch_normalisation import TransformerModelWithTwoAuxEncoders, CombinedDataset, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE
 
 import plotting
 import windowing
 
 # Constants
 NUM_EPOCHS_ON_EACH_SCENARIO = 100
-NUM_ITERATIONS_OVER_ALL_SCENARIOS = 50
+NUM_ITERATIONS_OVER_ALL_SCENARIOS = 10
 
 TRAIN_DATASET_FILE = "train_dataset.csv"
 TEST_DATASET_FILE = "test_dataset.csv"
@@ -138,7 +138,7 @@ def fine_tune_model(model: TransformerModelWithTwoAuxEncoders):
                     # Backward pass
                     loss.backward()
                     # It helps, nan otherwise
-                    #torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Gradient clipping
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Gradient clipping
                     optimizer.step()
 
                     # Accumulate loss
@@ -162,7 +162,7 @@ def fine_tune_model(model: TransformerModelWithTwoAuxEncoders):
 
 
 if __name__ == '__main__':
-    model = torch.load('../../trained-models/4th-phase/initial_model/transformer.pth')
+    model = torch.load('../../trained-models/4th-phase/initial_model_batch_normalisation/transformer_with_batch_normalisation.pth')
 
     model = fine_tune_model(model)
     torch.save(model.state_dict(), 'generated-models/transformer_tuned_on_15_scenarios_weights.pth')

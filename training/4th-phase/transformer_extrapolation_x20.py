@@ -8,9 +8,9 @@ import plotting
 from transformer_initial_training import TransformerModelWithTwoAuxEncoders, CombinedDataset, model_name, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, plot_color
 
 # Load dataframes
-test_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/extrapolation_dataset_x20_extended.csv')
-nodes_aux_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/nodes_aux.csv')
-links_aux_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/links_aux.csv')
+test_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/extrapolation_dataset.csv', sep=";")
+nodes_aux_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/nodes_aux.csv', sep=";")
+links_aux_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/links_aux.csv', sep=";")
 
 # Load jobs
 input_columns_jobs = ['index', 'flops', 'input_files_size', 'output_files_size', 'dataset_node_index']
