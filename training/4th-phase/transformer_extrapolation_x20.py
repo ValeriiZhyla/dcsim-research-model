@@ -5,11 +5,11 @@ from torch.utils.data import DataLoader
 
 import windowing
 import plotting
-from transformer_initial_training import TransformerModelWithTwoAuxEncoders, CombinedDataset, model_name, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, plot_color
+from initial_training.transformer_initial_training import CombinedDataset, model_name, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, plot_color
 
 # Load dataframes
 test_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/extrapolation_dataset.csv', sep=";")
-nodes_aux_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/nodes_aux.csv', sep=";")
+nodes_aux_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/nodes_test.csv', sep=";")
 links_aux_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/links_aux.csv', sep=";")
 
 # Load jobs
@@ -49,7 +49,8 @@ def apply_model_to_data():
     print("Using device:", device)
 
     #model = torch.load('../../trained-models/4th-phase/transformer.pth')
-    model = torch.load('generated-models/transformer.pth')
+    model = torch.load('../../trained-models/4th-phase/initial_model/transformer.pth')
+    #model = torch.load('generated-models/tr.pth')
 
     model.to(device)
 

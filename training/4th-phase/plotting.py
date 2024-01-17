@@ -46,7 +46,7 @@ def show_metrics(output_columns, mse_per_param, mae_per_param, rmse_per_param, r
         print("=================================")
 
 
-def denorm_and_plot_predicted_actual(output_columns, output_scaler, predictions_array, actual_values_array, model_name, max_points=1000000, color_name="blue", purpose=None, add_help_line=True):
+def denorm_and_plot_predicted_actual(output_columns, output_scaler, predictions_array, actual_values_array, model_name, max_points=1000000, color_name="blue", purpose=None, add_help_line=True, show=True):
     # Scale back to original values for readable plots
     if len(predictions_array) > max_points:
         # Check if the number of points is more than max_points
@@ -98,10 +98,12 @@ def denorm_and_plot_predicted_actual(output_columns, output_scaler, predictions_
             plt.legend()
 
         plt.savefig(file_name, dpi=200, bbox_inches='tight', format='png')
-        plt.show()
+        if show:
+            # Show plot
+            plt.show()
 
 
-def plot_kde(output_columns, predictions_array, actual_values_array, model_name, color_name="blue", purpose=None):
+def plot_kde(output_columns, predictions_array, actual_values_array, model_name, color_name="blue", purpose=None, show=True):
     # Your existing code for scaling and selecting data...
 
 
@@ -140,8 +142,9 @@ def plot_kde(output_columns, predictions_array, actual_values_array, model_name,
         # Save plot
         plt.savefig(file_name, dpi=200, bbox_inches='tight')
 
-        # Show plot
-        plt.show()
+        if show:
+            # Show plot
+            plt.show()
 
 def calculate_and_show_metrics(output_columns, predictions_array, actual_values_array, scenario_name=None):
     mse_per_param, mae_per_param, rmse_per_param, r_squared_per_param = calculate_metrics(actual_values_array, predictions_array, output_columns)

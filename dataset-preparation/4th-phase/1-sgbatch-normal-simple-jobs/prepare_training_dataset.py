@@ -27,6 +27,12 @@ train_df_original = pdc.get_dataset(platform=PLATFORM_FILE_NAME, workload_prefix
 train_simulations = pdc.get_all_unique_simulation_ids(train_df_original)
 test_df_original = pdc.get_dataset(platform=PLATFORM_FILE_NAME, workload_prefix=WORKLOAD_FILE_NAME_PREFIX, dataset_prefix=DATASET_FILE_NAME_PREFIX, simulations_of_each_length=SIMULATIONS_OF_EACH_LENGTH_TEST, exclude_simulations=train_simulations)
 
+train_df_original['job_start'] = train_df_original['job_start'] + 10
+train_df_original['job_end'] = train_df_original['job_end'] + 10
+
+test_df_original['job_start'] = test_df_original['job_start'] + 10
+test_df_original['job_end'] = test_df_original['job_end'] + 10
+
 # Add column with dataset location node
 train_df_with_dataset_location = pdc.add_dataset_node_index(train_df_original, node_index=DATASET_LOCATION_INDEX)
 test_df_with_dataset_location = pdc.add_dataset_node_index(test_df_original, node_index=DATASET_LOCATION_INDEX)

@@ -1,15 +1,10 @@
 import time
 
 import numpy as np
-import pandas as pd
-import seaborn
 import torch
-from torch import nn
-from torch.nn import init
-from torch.utils.data import DataLoader, Dataset
-from transformer_initial_training import TransformerModelWithTwoAuxEncoders, CombinedDataset, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_LAYERS, INPUT_SIZE, OUTPUT_SIZE, \
-    NHEADS, NUM_ENCODER_LAYERS, NUM_DECODER_LAYERS, model_name, plot_color
-from transformer_fine_tuning_15_scenarios import Scenario, scenarios, input_columns_jobs, output_columns_jobs, nodes_columns, links_columns
+from torch.utils.data import DataLoader
+from transformer_initial_training_batch_normalisation import TransformerModelWithTwoAuxEncoders, CombinedDataset, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, model_name, plot_color
+from fine_tuning.transformer_fine_tuning_15_scenarios import scenarios, input_columns_jobs, output_columns_jobs, nodes_columns, links_columns
 
 import plotting
 import windowing
@@ -82,8 +77,13 @@ def fine_tune_model(model: TransformerModelWithTwoAuxEncoders):
         plotting.calculate_and_show_metrics(output_columns_jobs, predictions_array, actual_values_array, scenario_name=scenario.name)
 
         # Denormalize and plot results for each parameter
-        plotting.denorm_and_plot_predicted_actual(output_columns_jobs, output_jobs_scaler, predictions_array, actual_values_array, model_name, purpose=scenario.name + " interpolation")
+        plotting.denorm_and_plot_predicted_actual(output_columns_jobs, output_jobs_scaler, predictions_array, actual_values_array, model_name, purpose=scenario.name + " interpolation", show=False)
+
+        # Create KDE plot
+        plotting.plot_kde(output_columns_jobs, predictions_array, actual_values_array, model_name, color_name=plot_color, purpose=scenario.name + " interpolation", show=False)
+
 
 if __name__ == '__main__':
-    model = torch.load('generated-models/transformer_tuned_on_15_scenarios.pth')
+    #model = torch.load('generated-models/transformer_tuned_on_15_scenarios.pth')
+    model = torch.load('../../trained-models/4th-phase/model_with_batch_normalisation_tuned_on_15_scenarios/transformer_tuned_on_15_scenarios.pth')
     fine_tune_model(model)
