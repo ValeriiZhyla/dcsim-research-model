@@ -1,6 +1,6 @@
 DIR="D:\\KIT\\Master Thesis\\simulations\\fourth_phase"
 
-PREFIX_1="1-sgbatch-normal-simple-jobs-simple-jobs"
+PREFIX_1="1-sgbatch-normal-simple-jobs"
 PREFIX_2="2-sgbatch-high-links-latency-simple-jobs"
 PREFIX_3="3-sgbatch-low-link-bandwidth-medium-latency-complex-jobs"
 PREFIX_4="4-sgbatch-more-cores-complex-jobs"
