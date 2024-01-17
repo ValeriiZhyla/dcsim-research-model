@@ -34,13 +34,15 @@ def calculate_metrics(actual_values, predicted_values, output_columns):
     return mse_per_param, mae_per_param, rmse_per_param, r_squared_per_param
 
 
-def show_metrics(output_columns, mse_per_param, mae_per_param, rmse_per_param, r_squared_per_param):
+def show_metrics(output_columns, mse_per_param, mae_per_param, rmse_per_param, r_squared_per_param, scenario_name=None):
+    if scenario_name is not None:
+        print(f"Metrics for scenario [{scenario_name}]")
     for i in range(len(output_columns)):
-        print(f"Parameter [{output_columns[i]}]:")
-        print(f"  Mean Squared Error (MSE):         {str(round(mse_per_param[i], 7)).rjust(15)}")
-        print(f"  Root Mean Squared Error (RMSE):   {str(round(rmse_per_param[i], 7)).rjust(15)}")
-        print(f"  Mean Absolute Error (MAE):        {str(round(mae_per_param[i], 7)).rjust(15)}")
-        print(f"  R-squared (R^2):                  {str(round(r_squared_per_param[i], 7)).rjust(15)}")
+        print(f"  Parameter [{output_columns[i]}]:")
+        print(f"    Mean Squared Error (MSE):         {str(round(mse_per_param[i], 7)).rjust(15)}")
+        print(f"    Root Mean Squared Error (RMSE):   {str(round(rmse_per_param[i], 7)).rjust(15)}")
+        print(f"    Mean Absolute Error (MAE):        {str(round(mae_per_param[i], 7)).rjust(15)}")
+        print(f"    R-squared (R^2):                  {str(round(r_squared_per_param[i], 7)).rjust(15)}")
         print("=================================")
 
 
@@ -141,6 +143,6 @@ def plot_kde(output_columns, predictions_array, actual_values_array, model_name,
         # Show plot
         plt.show()
 
-def calculate_and_show_metrics(output_columns, predictions_array, actual_values_array):
+def calculate_and_show_metrics(output_columns, predictions_array, actual_values_array, scenario_name=None):
     mse_per_param, mae_per_param, rmse_per_param, r_squared_per_param = calculate_metrics(actual_values_array, predictions_array, output_columns)
-    show_metrics(output_columns, mse_per_param, mae_per_param, rmse_per_param, r_squared_per_param)
+    show_metrics(output_columns, mse_per_param, mae_per_param, rmse_per_param, r_squared_per_param, scenario_name=scenario_name)

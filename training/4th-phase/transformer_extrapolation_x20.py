@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 
 import windowing
 import plotting
-from transformer_training import TransformerModelWithTwoAuxEncoders, CombinedDataset, model_name, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, plot_color
+from transformer_initial_training import TransformerModelWithTwoAuxEncoders, CombinedDataset, model_name, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, plot_color
 
 # Load dataframes
 test_df = pd.read_csv('../../dataset-preparation/4th-phase/0-main-dataset/extrapolation_dataset_x20_extended.csv')
