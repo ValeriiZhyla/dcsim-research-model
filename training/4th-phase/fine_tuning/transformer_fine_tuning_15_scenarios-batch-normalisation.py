@@ -4,7 +4,7 @@ import pandas as pd
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-from initial_training.transformer_initial_training_batch_normalisation import TransformerModelWithTwoAuxEncoders, CombinedDataset, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE
+from initial_training.transformer_initial_training_batch_normalisation import TransformerModelWithTwoAuxEncodersAndNormalisation, CombinedDataset, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE
 
 import windowing
 
@@ -68,7 +68,7 @@ scenarios: list[Scenario] = list(map(lambda name: Scenario(
     f"{PATH_PREFIX}/{name}/{LINKS_FILE}"), SCENARIOS_NAMES))
 
 
-def fine_tune_model(model: TransformerModelWithTwoAuxEncoders):
+def fine_tune_model(model: TransformerModelWithTwoAuxEncodersAndNormalisation):
     # Define the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)

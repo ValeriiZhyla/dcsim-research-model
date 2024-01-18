@@ -3,13 +3,13 @@ import time
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
-from transformer_initial_training_batch_normalisation import TransformerModelWithTwoAuxEncoders, CombinedDataset, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, model_name, plot_color
+from initial_training.transformer_initial_training_batch_normalisation import TransformerModelWithTwoAuxEncodersAndNormalisation, CombinedDataset, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, model_name, plot_color
 from fine_tuning.transformer_fine_tuning_15_scenarios import scenarios, input_columns_jobs, output_columns_jobs, nodes_columns, links_columns
 
 import plotting
 import windowing
 
-def fine_tune_model(model: TransformerModelWithTwoAuxEncoders):
+def fine_tune_model(model: TransformerModelWithTwoAuxEncodersAndNormalisation):
     # Define the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
@@ -85,5 +85,5 @@ def fine_tune_model(model: TransformerModelWithTwoAuxEncoders):
 
 if __name__ == '__main__':
     #model = torch.load('generated-models/transformer_tuned_on_15_scenarios.pth')
-    model = torch.load('../../trained-models/4th-phase/model_with_batch_normalisation_tuned_on_15_scenarios/transformer_tuned_on_15_scenarios.pth')
+    model = torch.load('../../../trained-models/4th-phase/model_with_batch_normalisation_tuned_on_15_scenarios/transformer_tuned_on_15_scenarios.pth')
     fine_tune_model(model)

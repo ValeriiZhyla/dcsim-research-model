@@ -32,9 +32,9 @@ model_name = "Transformer"
 plot_color = seaborn.color_palette("deep")[4]  # deep purple
 
 
-class TransformerModelWithTwoAuxEncoders(nn.Module):
+class TransformerModelWithTwoAuxEncodersAndNormalisation(nn.Module):
     def __init__(self, jobs_src_input_size, nodes_aux_input_size, links_input_size, hidden_size, output_size, nhead, num_encoder_layers, num_decoder_layers):
-        super(TransformerModelWithTwoAuxEncoders, self).__init__()
+        super(TransformerModelWithTwoAuxEncodersAndNormalisation, self).__init__()
         # Linear layers and BatchNorm1d layers for source, two auxiliary, and target features to hidden dimension
         self.jobs_src_input_projection = nn.Linear(jobs_src_input_size, hidden_size)
         self.jobs_src_bn = nn.BatchNorm1d(hidden_size)
@@ -161,11 +161,11 @@ def train_and_evaluate_model():
     test_loader = DataLoader(test_dataset_jobs_with_aux, batch_size=BATCH_SIZE, shuffle=False)
 
     # Initialize the model
-    model = TransformerModelWithTwoAuxEncoders(jobs_src_input_size=INPUT_SIZE, nodes_aux_input_size=len(nodes_columns), links_input_size=len(links_columns),
-                                               hidden_size=HIDDEN_LAYERS,
-                                               output_size=OUTPUT_SIZE, nhead=NHEADS,
-                                               num_encoder_layers=NUM_ENCODER_LAYERS,
-                                               num_decoder_layers=NUM_DECODER_LAYERS).to(device)
+    model = TransformerModelWithTwoAuxEncodersAndNormalisation(jobs_src_input_size=INPUT_SIZE, nodes_aux_input_size=len(nodes_columns), links_input_size=len(links_columns),
+                                                               hidden_size=HIDDEN_LAYERS,
+                                                               output_size=OUTPUT_SIZE, nhead=NHEADS,
+                                                               num_encoder_layers=NUM_ENCODER_LAYERS,
+                                                               num_decoder_layers=NUM_DECODER_LAYERS).to(device)
 
     criterion = nn.MSELoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.001)  # most accurate results so far for 0.001

@@ -9,7 +9,7 @@ from initial_training.transformer_initial_training import TransformerModelWithTw
 
 # Load dataframes
 test_df = pd.read_csv('../../../dataset-preparation/4th-phase/0-main-dataset/extrapolation_dataset.csv', sep=";")
-nodes_aux_df = pd.read_csv('../../../dataset-preparation/4th-phase/0-main-dataset/nodes_test.csv', sep=";")
+nodes_aux_df = pd.read_csv('../../../dataset-preparation/4th-phase/0-main-dataset/nodes_aux.csv', sep=";")
 links_aux_df = pd.read_csv('../../../dataset-preparation/4th-phase/0-main-dataset/links_aux.csv', sep=";")
 
 # Load jobs
