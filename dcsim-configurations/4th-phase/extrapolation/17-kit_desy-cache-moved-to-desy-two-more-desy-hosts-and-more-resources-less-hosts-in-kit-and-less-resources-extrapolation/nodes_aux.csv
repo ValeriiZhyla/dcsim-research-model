@@ -1,0 +1,17 @@
+name;index;type;type_index;speed_mf;cores;ram_gib;disk_tib;disk_read_bw_mbps;disk_write_bw_mbps;in_cluster
+Tier1;1;cluster;0;0;0;0;0;0;0;0
+Tier10;2;worker;1;1750;32;650;0;0;0;1
+Tier11;3;worker;1;1750;32;650;0;0;0;1
+Tier12;4;worker;1;1750;32;650;0;0;0;1
+Tier13;5;worker;1;1750;32;650;0;0;0;1
+Tier14;6;worker;1;1750;32;650;0;0;0;1
+Tier21;7;worker;1;3200;128;1200;0;0;0;0
+Tier22;8;worker;1;3200;96;1000;0;0;0;0
+Tier23;9;worker;1;3200;64;600;0;0;0;0
+GridKA_dCache;10;cache;5;1000000;10;0;7000;920;920;0
+WMSHost;11;scheduler;3;10000;10;16;0;0;0;0
+GridKAgateway;12;router;4;0;0;0;0;0;0;0
+KITgateway;13;router;4;0;0;0;0;0;0;0
+DESY_dCache;14;storage;2;1000000;10;0;7000;920;920;0
+DESYGridgateway;15;router;4;0;0;0;0;0;0;0
+DESYgateway;16;router;4;0;0;0;0;0;0;0
