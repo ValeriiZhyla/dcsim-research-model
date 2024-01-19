@@ -162,3 +162,7 @@ python extract-simulations.py --simulation_root_dir="D:\KIT\Master Thesis\simula
 python extract-simulations.py --simulation_root_dir="D:\KIT\Master Thesis\simulations\fourth_phase\15-kit_desy-cache-moved-to-desy-more-cores-in-desy\1000"
 python extract-simulations.py --simulation_root_dir="D:\KIT\Master Thesis\simulations\fourth_phase\15-kit_desy-cache-moved-to-desy-more-cores-in-desy\1500"
 python extract-simulations.py --simulation_root_dir="D:\KIT\Master Thesis\simulations\fourth_phase\15-kit_desy-cache-moved-to-desy-more-cores-in-desy\2000"
+
+python extract-simulations.py --simulation_root_dir="D:\KIT\Master Thesis\simulations\fourth_phase\extrapolation\15-kit_desy-cache-moved-to-desy-more-cores-in-desy-extrapolation\20000"
+python extract-simulations.py --simulation_root_dir="D:\KIT\Master Thesis\simulations\fourth_phase\extrapolation\16-kit_desy-cache-moved-to-desy-more-resources-in-desy-less-resources-in-kit-faster-links-extrapolation\20000"
+python extract-simulations.py --simulation_root_dir="D:\KIT\Master Thesis\simulations\fourth_phase\extrapolation\17-kit_desy-cache-moved-to-desy-two-more-desy-hosts-and-more-resources-less-hosts-in-kit-and-less-resources-extrapolation\20000"
