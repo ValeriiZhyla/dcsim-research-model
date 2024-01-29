@@ -1,16 +1,10 @@
 import time
 
-import numpy as np
 import seaborn
 import torch
 import torch.nn as nn
-import pandas as pd
-from matplotlib import pyplot as plt
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from sklearn.preprocessing import StandardScaler
-from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
-from torch.utils.data import DataLoader, TensorDataset
-import commons
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+from training import commons
 
 # Constants
 NUM_EPOCHS = 200
@@ -41,6 +35,14 @@ class BiLSTMModel(nn.Module):
         return out
 
 
+TRAIN_PATH = '../../dataset-preparation/2nd-phase/train_dataset.csv'
+TEST_PATH = '../../dataset-preparation/2nd-phase/test_dataset.csv'
+# TRAIN_PATH = '../../dataset-preparation/2nd-phase/train_dataset_small.csv'
+# TEST_PATH = '../../dataset-preparation/2nd-phase/test_dataset_small.csv'
+
+input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
+output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
+
 def train_and_evaluate_model():
     # Define the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -49,32 +51,15 @@ def train_and_evaluate_model():
     # Start timer
     start_time = time.time()
 
-    # Load data
-    train_df = pd.read_csv('../../dataset-preparation/2nd-phase/train_dataset.csv')
-    test_df = pd.read_csv('../../dataset-preparation/2nd-phase/test_dataset.csv')
-    #train_df = pd.read_csv('../../dataset-preparation/2nd-phase/train_dataset_small.csv')
-    #test_df = pd.read_csv('../../dataset-preparation/2nd-phase/test_dataset_small.csv')
-
-    # Transform dataframes into overlapping windows
-    input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
-    output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
-    train_windows = commons.create_windows(train_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns, output_columns=output_columns)
-    test_windows = commons.create_windows(test_df, window_size=WINDOW_SIZE, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=input_columns, output_columns=output_columns)
-
-    # Fit the scalers on the whole training dataset
-    input_scaler, output_scaler = commons.create_and_fit_scalers(train_df, input_columns, output_columns)
-
-    # Prepare datasets
-    train_dataset = commons.scale_and_reshape_windows(train_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
-    test_dataset = commons.scale_and_reshape_windows(test_windows, WINDOW_SIZE, input_scaler, output_scaler, input_columns, output_columns)
-
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+    # Load data and scalers
+    train_loader, train_scalers, test_loader, test_scalers = commons.load_data(TRAIN_PATH, TEST_PATH, input_columns, output_columns, BATCH_SIZE, WINDOW_SIZE, WINDOW_OVERLAP_SIZE)
 
     # Initialize the model, loss function, and optimizer
     model = BiLSTMModel(input_size=INPUT_SIZE, hidden_size=HIDDEN_LAYERS, output_size=OUTPUT_SIZE).to(device)
+
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=5, verbose=True)
 
     # Training loop
     model.train()
@@ -90,46 +75,21 @@ def train_and_evaluate_model():
             total_loss += loss.item()
         avg_loss = total_loss / len(train_loader)
         print(f'Epoch [{epoch + 1}/{NUM_EPOCHS}], Average Loss: {avg_loss}')
+        scheduler.step(avg_loss)
 
-    # Stop timer
+    # Stop timer and print training summary
     end_time = time.time()
     total_time = end_time - start_time
-    # Print training summary
-    print("=================================")
-    print(f"Epochs: {NUM_EPOCHS}")
-    print(f"Window size: {WINDOW_SIZE}")
-    print(f"Window overlap: {WINDOW_OVERLAP_SIZE}")
-    print(f"Batch size: {BATCH_SIZE}")
-    print(f"Hidden layers: {HIDDEN_LAYERS}")
-    print(f"Total time for training: {total_time:.2f} seconds")
-    print("=================================")
+    commons.print_training_summary(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_LAYERS, total_time)
 
     # Evaluate the model with test data
-    model.eval()
-    predictions = []
-    actual_values = []
-
-    with torch.no_grad():
-        for inputs, targets in test_loader:
-            # Move data to the device
-            inputs, targets = inputs.to(device), targets.to(device)
-
-            # Make a prediction
-            outputs = model(inputs)
-
-            # Store predictions and actual values for further metrics calculations
-            predictions.extend(outputs.cpu().numpy())
-            actual_values.extend(targets.cpu().numpy())
-
-    # Convert lists of arrays to single numpy arrays
-    predictions_array = np.vstack(predictions)
-    actual_values_array = np.vstack(actual_values)
+    predictions_array, actual_values_array = commons.evaluate_model_get_predictions_and_actuals(model, test_loader, device)
 
     # Calculate metrics for each output parameter and show them
     commons.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
 
     # Denormalize and plot results for each parameter
-    commons.denorm_and_plot(output_columns, output_scaler, predictions_array, actual_values_array, model_name, purpose="training")
+    commons.denorm_and_plot_predicted_actual(output_columns, test_scalers, predictions_array, actual_values_array, model_name, purpose="training")
     return model
 
 
