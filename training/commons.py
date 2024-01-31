@@ -78,7 +78,9 @@ def evaluate_model_get_predictions_and_actual_values(model, test_loader, device)
     # Evaluate the model with test data
     model.eval()
     predictions = []
-    actual_values = []
+
+    actual_inputs = []
+    actual_outputs = []
 
     with torch.no_grad():
         for inputs, targets in test_loader:
@@ -91,13 +93,16 @@ def evaluate_model_get_predictions_and_actual_values(model, test_loader, device)
 
             # Store predictions and actual values for further metrics calculations
             predictions.extend(outputs.cpu().numpy())
-            actual_values.extend(targets.cpu().numpy())
+            actual_outputs.extend(targets.cpu().numpy())
+            # We will need inputs to reverse the windowing process
+            actual_inputs.extend(inputs.cpu().numpy())
 
     # Convert lists of arrays to single numpy arrays
     predictions_array = np.vstack(predictions)
-    actual_values_array = np.vstack(actual_values)
+    actual_values_array = np.vstack(actual_outputs)
+    actual_inputs_array = np.vstack(actual_inputs)
 
-    return predictions_array, actual_values_array
+    return predictions_array, actual_values_array, actual_inputs_array
 
 
 def print_training_summary(num_epochs, window_size, window_overlap_size, batch_size, hidden_layers, total_time):
