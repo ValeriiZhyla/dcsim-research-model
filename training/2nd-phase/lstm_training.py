@@ -4,6 +4,9 @@ import seaborn
 import torch
 import torch.nn as nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+
+import metrics
+import plotting
 from training import commons
 
 # Constants
@@ -83,13 +86,13 @@ def train_and_evaluate_model():
     commons.print_training_summary(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_LAYERS, total_time)
 
     # Evaluate the model with test data
-    predictions_array, actual_values_array = commons.evaluate_model_get_predictions_and_actuals(model, test_loader, device)
+    predictions_array, actual_values_array = commons.evaluate_model_get_predictions_and_actual_values(model, test_loader, device)
 
     # Calculate metrics for each output parameter and show them
-    commons.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
+    metrics.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
 
     # Denormalize and plot results for each parameter
-    commons.denorm_and_plot_predicted_actual(output_columns, test_scalers, predictions_array, actual_values_array, model_name, purpose="training")
+    plotting.denorm_and_plot_predicted_actual(output_columns, test_scalers, predictions_array, actual_values_array, model_name, purpose="training")
     return model
 
 
