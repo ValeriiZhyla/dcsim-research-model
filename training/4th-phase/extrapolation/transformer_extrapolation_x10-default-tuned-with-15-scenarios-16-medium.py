@@ -8,9 +8,12 @@ import plotting
 from initial_training.transformer_initial_training import TransformerModelWithTwoAuxEncoders, CombinedDataset, model_name, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, plot_color
 
 # Load dataframes
-test_df = pd.read_csv('../../../dataset-preparation/4th-phase/extrapolation/16-kit_desy-cache-moved-to-desy-more-resources-in-desy-less-resources-in-kit-faster-links-extrapolation/extrapolation_dataset.csv', sep=";")
-nodes_aux_df = pd.read_csv('../../../dataset-preparation/4th-phase/extrapolation/16-kit_desy-cache-moved-to-desy-more-resources-in-desy-less-resources-in-kit-faster-links-extrapolation/nodes_aux.csv', sep=";")
-links_aux_df = pd.read_csv('../../../dataset-preparation/4th-phase/extrapolation/16-kit_desy-cache-moved-to-desy-more-resources-in-desy-less-resources-in-kit-faster-links-extrapolation/links_aux.csv', sep=";")
+test_df = pd.read_csv(
+    '../../../dataset_preparation/4th-phase/extrapolation/16-kit_desy-cache-moved-to-desy-more-resources-in-desy-less-resources-in-kit-faster-links-extrapolation/extrapolation_dataset.csv', sep=";")
+nodes_aux_df = pd.read_csv(
+    '../../../dataset_preparation/4th-phase/extrapolation/16-kit_desy-cache-moved-to-desy-more-resources-in-desy-less-resources-in-kit-faster-links-extrapolation/nodes_aux.csv', sep=";")
+links_aux_df = pd.read_csv(
+    '../../../dataset_preparation/4th-phase/extrapolation/16-kit_desy-cache-moved-to-desy-more-resources-in-desy-less-resources-in-kit-faster-links-extrapolation/links_aux.csv', sep=";")
 
 # Load jobs
 input_columns_jobs = ['index', 'flops', 'input_files_size', 'output_files_size', 'dataset_node_index']

@@ -17,7 +17,7 @@ TEST_DATASET_FILE = "test_dataset.csv"
 NODES_FILE = "nodes_aux.csv"
 LINKS_FILE = "links_aux.csv"
 
-PATH_PREFIX = "../../../dataset-preparation/4th-phase"
+PATH_PREFIX = "../../../dataset_preparation/4th-phase"
 SCENARIOS_NAMES = ['1-sgbatch-normal-simple-jobs', '2-sgbatch-high-links-latency-simple-jobs', '3-sgbatch-low-link-bandwidth-medium-latency-complex-jobs',
                    '4-sgbatch-more-cores-complex-jobs', '5-sgbatch-less-cores-more-ram', '6-sgbatch-slower-storage-disk', '7-sgbatch-one-host-less', '8-kit_desy-normal',
                    '9-kit_desy-no-fatpipes', '10-kit_desy-high-link-bandwidth', '11-kit_desy-less-cores-everywhere', '12-kit_desy-cache-moved-to-desy',

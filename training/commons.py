@@ -7,22 +7,22 @@ import json
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import TensorDataset, DataLoader
 
-from windowing import create_windows
+from training import windowing
 
 HYPERPARAMETERS_FILE = 'hyperparameters.json'
 GENERATED_MODELS_DIRECTORY = 'generated-models'
 
 
 def load_data(path_train, path_test, input_columns, output_columns, batch_size, window_size, window_overlap_size):
-    train_df = pd.read_csv(path_train)
-    test_df = pd.read_csv(path_test)
+    train_df = pd.read_csv(path_train, delimiter=';')
+    test_df = pd.read_csv(path_test, delimiter=';')
 
     # Fit the scalers on the whole training dataset
     train_scalers, train_df_scaled = df_fit_transform_and_get_scalers(train_df, input_columns + output_columns)
     test_scalers, test_df_scaled = df_fit_transform_and_get_scalers(test_df, input_columns + output_columns)
 
-    train_windows = create_windows(train_df_scaled, window_size=window_size, overlap_size=window_overlap_size, input_columns=input_columns, output_columns=output_columns)
-    test_windows = create_windows(test_df_scaled, window_size=window_size, overlap_size=window_overlap_size, input_columns=input_columns, output_columns=output_columns)
+    train_windows = windowing.create_windows(train_df_scaled, window_size=window_size, overlap_size=window_overlap_size, input_columns=input_columns, output_columns=output_columns)
+    test_windows = windowing.create_windows(test_df_scaled, window_size=window_size, overlap_size=window_overlap_size, input_columns=input_columns, output_columns=output_columns)
 
     train_dataset = create_tensor_dataset(train_windows)
     test_dataset = create_tensor_dataset(test_windows)
@@ -34,12 +34,12 @@ def load_data(path_train, path_test, input_columns, output_columns, batch_size, 
 
 
 def load_test_data(path_test, input_columns, output_columns, batch_size, window_size, window_overlap_size):
-    test_df = pd.read_csv(path_test)
+    test_df = pd.read_csv(path_test, delimiter=';')
 
     # Fit the scalers on the whole training dataset
     test_scalers, test_df_scaled = df_fit_transform_and_get_scalers(test_df, input_columns + output_columns)
 
-    test_windows = create_windows(test_df_scaled, window_size=window_size, overlap_size=window_overlap_size, input_columns=input_columns, output_columns=output_columns)
+    test_windows = windowing.create_windows(test_df_scaled, window_size=window_size, overlap_size=window_overlap_size, input_columns=input_columns, output_columns=output_columns)
 
     test_dataset = create_tensor_dataset(test_windows)
 

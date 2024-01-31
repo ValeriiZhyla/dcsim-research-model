@@ -69,8 +69,8 @@ def train_and_evaluate_model():
     start_time = time.time()
 
     # Load data
-    # train_df = pd.read_csv('../../dataset-preparation/3rd-phase/train_dataset.csv')
-    train_df = pd.read_csv('../../../dataset-preparation/3rd-phase/train_dataset_small.csv')
+    # train_df = pd.read_csv('../../dataset_preparation/3rd-phase/train_dataset.csv')
+    train_df = pd.read_csv('../../../dataset_preparation/3rd-phase/train_dataset_small.csv')
 
     input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
     output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']

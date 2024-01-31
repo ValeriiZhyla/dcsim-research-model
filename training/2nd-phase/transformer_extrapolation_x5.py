@@ -5,7 +5,7 @@ from transformer_training_encoder_only import TransformerModel, model_name, WIND
 
 purpose="extrapolation"
 
-TEST_PATH = '../../dataset-preparation/2nd-phase/extrapolation_dataset.csv'
+TEST_PATH = '../../dataset_preparation/2nd-phase/extrapolation_dataset.csv'
 input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
 output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
 

@@ -52,10 +52,10 @@ class TransformerModel(nn.Module):
 
         return output
 
-TRAIN_PATH = '../../dataset-preparation/2nd-phase/train_dataset.csv'
-TEST_PATH = '../../dataset-preparation/2nd-phase/test_dataset.csv'
-# TRAIN_PATH = '../../dataset-preparation/2nd-phase/train_dataset_small.csv'
-# TEST_PATH = '../../dataset-preparation/2nd-phase/test_dataset_small.csv'
+TRAIN_PATH = '../../dataset_preparation/2nd-phase/train_dataset.csv'
+TEST_PATH = '../../dataset_preparation/2nd-phase/test_dataset.csv'
+# TRAIN_PATH = '../../dataset_preparation/2nd-phase/train_dataset_small.csv'
+# TEST_PATH = '../../dataset_preparation/2nd-phase/test_dataset_small.csv'
 
 input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
 output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']

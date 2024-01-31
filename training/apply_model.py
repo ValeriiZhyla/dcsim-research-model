@@ -1,8 +1,8 @@
 import torch
 
-import metrics
-import plotting
-import training.commons as commons
+from training import metrics
+from training import plotting
+from training import commons
 
 def apply_model_to_data(model, model_name, results_directory, dataset_path, plot_color, purpose, input_columns, output_columns, batch_size, window_size, window_overlap_size, create_plots=True, create_kde=True):
     test_loader, test_scalers = commons.load_test_data(dataset_path, input_columns, output_columns, batch_size, window_size, window_overlap_size)

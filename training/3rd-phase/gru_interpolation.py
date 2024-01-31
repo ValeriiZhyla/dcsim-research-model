@@ -5,7 +5,7 @@ from gru_training import BiGRUModel, model_name, WINDOW_SIZE, WINDOW_OVERLAP_SIZ
 
 purpose="interpolation"
 
-TEST_PATH = '../../dataset-preparation/3rd-phase/test_dataset.csv'
+TEST_PATH = '../../dataset_preparation/3rd-phase/test_dataset.csv'
 input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
 output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
 

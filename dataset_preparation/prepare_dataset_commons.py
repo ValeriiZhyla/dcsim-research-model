@@ -1,4 +1,5 @@
 import argparse
+import random
 
 import psycopg2
 import pandas as pd
@@ -92,3 +93,16 @@ def get_dataset(platform, workload_prefix, dataset_prefix, simulations_of_each_l
     conn.close()
 
     return df_sorted_filtered
+
+
+def add_simulation_id_integer(df):
+    simulations_ids = get_all_unique_simulation_ids(df)
+    random_start = random.randint(1000000000, 9000000000)
+    unique_integers = list(range(random_start, random_start + len(simulations_ids)))
+    random.shuffle(unique_integers)
+    element_to_int = {element: unique_int for element, unique_int in zip(simulations_ids, unique_integers)}
+
+    df['simulation_id_int'] = df['simulation_id'].map(element_to_int)
+
+    return df
+

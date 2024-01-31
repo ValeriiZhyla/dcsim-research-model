@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 
 
@@ -8,7 +10,8 @@ def create_windows(df, window_size, overlap_size, input_columns, output_columns,
     grouped = df.groupby(group_by_column, sort=False)
     print(f"Grouped by [{group_by_column}]. {grouped.ngroups} groups were found in dataset.")
 
-    for name, group in grouped:
+
+    for group_name, group in grouped:
         sequence_length = len(group)
 
         window_start_index_delta = window_size - overlap_size

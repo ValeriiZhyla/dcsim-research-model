@@ -12,7 +12,7 @@ WINDOW_SIZE = 200
 WINDOW_OVERLAP_SIZE = 100
 BATCH_SIZE = 32
 HIDDEN_LAYERS = 100
-INPUT_SIZE = 4
+INPUT_SIZE = 6
 OUTPUT_SIZE = 5
 
 model_name = "GRU"
@@ -35,12 +35,12 @@ class BiGRUModel(nn.Module):
         return out
 
 
-TRAIN_PATH = '../../dataset-preparation/1st-phase/train_dataset.csv'
-TEST_PATH = '../../dataset-preparation/1st-phase/test_dataset.csv'
-# TRAIN_PATH = '../../dataset-preparation/1st-phase/train_dataset_small.csv'
-# TEST_PATH = '../../dataset-preparation/1st-phase/test_dataset_small.csv'
+TRAIN_PATH = '../../dataset_preparation/1st-phase/train_dataset.csv'
+TEST_PATH = '../../dataset_preparation/1st-phase/test_dataset.csv'
+# TRAIN_PATH = '../../dataset_preparation/1st-phase/train_dataset_small.csv'
+# TEST_PATH = '../../dataset_preparation/1st-phase/test_dataset_small.csv'
 
-input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
+input_columns = ['simulation_id_int', 'simulation_length', 'index', 'flops', 'input_files_size', 'output_files_size']
 output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
 
 

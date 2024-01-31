@@ -17,7 +17,7 @@ TEST_DATASET_FILE = "test_dataset.csv"
 NODES_FILE = "nodes_aux.csv"
 LINKS_FILE = "links_aux.csv"
 
-PATH_PREFIX = "../../../dataset-preparation/4th-phase"
+PATH_PREFIX = "../../../dataset_preparation/4th-phase"
 SCENARIOS_NAMES = [
     #'1-sgbatch-normal-simple-jobs',
     #'2-sgbatch-high-links-latency-simple-jobs',

@@ -120,10 +120,10 @@ def train_and_evaluate_model():
     start_time = time.time()
 
     # Load dataframes
-    train_df = pd.read_csv('../../../dataset-preparation/4th-phase/0-main-dataset/train_dataset.csv', sep=";")
-    test_df = pd.read_csv('../../../dataset-preparation/4th-phase/0-main-dataset/test_dataset.csv', sep=";")
-    nodes_aux_df = pd.read_csv('../../../dataset-preparation/4th-phase/0-main-dataset/nodes_aux.csv', sep=";")
-    links_aux_df = pd.read_csv('../../../dataset-preparation/4th-phase/0-main-dataset/links_aux.csv', sep=";")
+    train_df = pd.read_csv('../../../dataset_preparation/4th-phase/0-main-dataset/train_dataset.csv', sep=";")
+    test_df = pd.read_csv('../../../dataset_preparation/4th-phase/0-main-dataset/test_dataset.csv', sep=";")
+    nodes_aux_df = pd.read_csv('../../../dataset_preparation/4th-phase/0-main-dataset/nodes_aux.csv', sep=";")
+    links_aux_df = pd.read_csv('../../../dataset_preparation/4th-phase/0-main-dataset/links_aux.csv', sep=";")
 
     # Load jobs
     input_columns_jobs = ['index', 'flops', 'input_files_size', 'output_files_size', 'dataset_node_index']
