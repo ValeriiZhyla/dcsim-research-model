@@ -42,6 +42,8 @@ hyperparameter_combinations = [
     Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=1),  # no overlap, one encoder, 1 head
     Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=4),  # no overlap, 4 encoders, 1 head
 
+    Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=128, heads=1, encoders=1),  # no overlap, one encoder, 1 head
+
 ]
 
 for hp in hyperparameter_combinations:

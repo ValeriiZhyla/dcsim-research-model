@@ -31,10 +31,10 @@ for hp in hyperparameter_combinations:
     else:
         # Train
         model: lstm_training.BiLSTMModel = lstm_training.train_and_evaluate_model(num_epochs=hp.epochs, window_size=hp.window_size, window_overlap=hp.window_overlap,
-                                                                                  batch_size=hp.batch_size, hidden_size=hp.hidden_size)
+                                                                                  batch_size=hp.batch_size, hidden_size=hp.hidden_size, layers=hp.layers)
         # Save
         directory: str = commons.save_model_and_get_directory(model, lstm_training.model_name, epochs=hp.epochs, window_size=hp.window_size, window_overlap=hp.window_overlap,
-                                                              batch_size=hp.batch_size, hidden_size=hp.hidden_size)
+                                                              batch_size=hp.batch_size, hidden_size=hp.hidden_size, layers=hp.layers)
         print(f"Model trained and saved in {directory}")
 
         # Evaluate: Interpolation
