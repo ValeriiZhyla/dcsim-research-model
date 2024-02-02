@@ -32,16 +32,22 @@ hyperparameter_combinations = [
     Hyperparameters(epochs=100, window_size=50, window_overlap=0, batch_size=128, hidden_size=50, layers=1),  # test with windows 100/0
 
     # Check different hidden sizes
-    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=128, layers=1),  # windows 100/0, 100 hl
+    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
     Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=96, layers=1),
     Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=64, layers=1),
+    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=32, layers=1),
+    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=16, layers=1),
 
+    # Check different batch sizes
+
+
+    # Check different layers number
     # Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=50, layers=1),  # windows 100/0, 50hl, 300 ep
 
 ]
 
 for hp in hyperparameter_combinations:
-    if commons.directory_name_with_hyperparameters_already_exists(gru_training.model_name, hp.epochs, hp.window_size, hp.window_overlap, hp.batch_size, hp.hidden_size):
+    if commons.directory_name_with_hyperparameters_already_exists(gru_training.model_name, hp.epochs, hp.window_size, hp.window_overlap, hp.batch_size, hp.hidden_size, layers=hp.layers):
         continue
     else:
         # Train
