@@ -16,10 +16,10 @@ NUM_EPOCHS = 10
 WINDOW_SIZE = 200
 WINDOW_OVERLAP_SIZE = 100
 BATCH_SIZE = 64
-HIDDEN_LAYERS = 32
+hidden_size = 32
 INPUT_SIZE = 4
 OUTPUT_SIZE = 5
-NHEADS = 2  # Ensure this is a divisor of HIDDEN_LAYERS
+NHEADS = 2  # Ensure this is a divisor of hidden_size
 NUM_ENCODER_LAYERS = 2
 NUM_DECODER_LAYERS = 2
 
@@ -90,7 +90,7 @@ def train_and_evaluate_model():
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     # Initialize the model
-    model = TransformerModel(input_size=INPUT_SIZE, hidden_size=HIDDEN_LAYERS,
+    model = TransformerModel(input_size=INPUT_SIZE, hidden_size=hidden_size,
                              output_size=OUTPUT_SIZE, nhead=NHEADS,
                              num_encoder_layers=NUM_ENCODER_LAYERS, num_decoder_layers=NUM_DECODER_LAYERS).to(device)
 
@@ -136,7 +136,7 @@ def train_and_evaluate_model():
     print(f"Window size: {WINDOW_SIZE}")
     print(f"Window overlap: {WINDOW_OVERLAP_SIZE}")
     print(f"Batch size: {BATCH_SIZE}")
-    print(f"Hidden layers: {HIDDEN_LAYERS}")
+    print(f"Hidden layers: {hidden_size}")
     print(f"Total time for training: {total_time:.2f} seconds")
     print("=================================")
 

@@ -105,26 +105,26 @@ def evaluate_model_get_predictions_and_actual_values(model, test_loader, device)
     return predictions_array, actual_values_array, actual_inputs_array
 
 
-def print_training_summary(num_epochs, window_size, window_overlap_size, batch_size, hidden_layers, total_time):
+def print_training_summary(num_epochs, window_size, window_overlap_size, batch_size, hidden_size, total_time):
     print("=================================")
     print(f"Epochs: {num_epochs}")
     print(f"Window size: {window_size}")
     print(f"Window overlap: {window_overlap_size}")
     print(f"Batch size: {batch_size}")
-    print(f"Hidden layers: {hidden_layers}")
+    print(f"Hidden layers: {hidden_size}")
     print(f"Total time for training: {total_time:.2f} seconds")
     print("=================================")
 
 
-def generate_directory_name_with_hyperparameters(model_name, epochs, window_size, window_overlap, batch_size, hidden_layers, heads=0, encoders=0, decoders=0) -> str:
+def generate_directory_name_with_hyperparameters(model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads=0, encoders=1, decoders=0, layers=1) -> str:
     if "transformer" in model_name.lower():
-        return f"{model_name}_{epochs}ep_{window_size}wd_{window_overlap}wo_{batch_size}bat_{hidden_layers}hl_{heads}hd_{encoders}enc_{decoders}dec"
+        return f"{model_name}_{epochs}ep_{window_size}wd_{window_overlap}wo_{batch_size}bat_{hidden_size}hs_{heads}hd_{encoders}enc_{decoders}dec"
     else:
-        return f"{model_name}_{epochs}ep_{window_size}wd_{window_overlap}wo_{batch_size}bat_{hidden_layers}hl"
+        return f"{model_name}_{epochs}ep_{window_size}wd_{window_overlap}wo_{batch_size}bat_{hidden_size}hs_{layers}la"
 
 
-def directory_name_with_hyperparameters_already_exists(model_name, epochs, window_size, window_overlap, batch_size, hidden_layers, heads=0, encoders=0, decoders=0) -> bool:
-    directory = generate_directory_name_with_hyperparameters(model_name, epochs, window_size, window_overlap, batch_size, hidden_layers, heads, encoders, decoders)
+def directory_name_with_hyperparameters_already_exists(model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads=0, encoders=0, decoders=0, layers=0) -> bool:
+    directory = generate_directory_name_with_hyperparameters(model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads, encoders, decoders, layers)
     full_path = os.path.join(GENERATED_MODELS_DIRECTORY, directory)
 
     if os.path.exists(full_path):
@@ -134,15 +134,15 @@ def directory_name_with_hyperparameters_already_exists(model_name, epochs, windo
         return False
 
 
-def save_model_hyperparameters(directory, window_size, window_overlap, batch_size, hidden_layers, heads=0, encoders=0, decoders=0):
-    hyperparameters = {'window_size': window_size, 'window_overlap': window_overlap, 'batch_size': batch_size, 'hidden_layers': hidden_layers, 'heads': heads, 'encoders': encoders,
+def save_model_hyperparameters(directory, window_size, window_overlap, batch_size, hidden_size, heads=0, encoders=0, decoders=0):
+    hyperparameters = {'window_size': window_size, 'window_overlap': window_overlap, 'batch_size': batch_size, 'hidden_size': hidden_size, 'heads': heads, 'encoders': encoders,
                        'decoders': decoders}
     with open(os.path.join(directory, HYPERPARAMETERS_FILE), "w") as file:
         json.dump(hyperparameters, file)
 
 
-def save_model_and_get_directory(model, model_name, epochs, window_size, window_overlap, batch_size, hidden_layers, heads=0, encoders=0, decoders=0) -> str:
-    directory = generate_directory_name_with_hyperparameters(model_name, epochs, window_size, window_overlap, batch_size, hidden_layers, heads, encoders, decoders)
+def save_model_and_get_directory(model, model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads=0, encoders=0, decoders=0, layers=0) -> str:
+    directory = generate_directory_name_with_hyperparameters(model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads, encoders, decoders, layers)
     full_path = os.path.join(GENERATED_MODELS_DIRECTORY, directory)
 
     # create the directory if it doesn't exist
@@ -154,6 +154,6 @@ def save_model_and_get_directory(model, model_name, epochs, window_size, window_
     torch.save(model, os.path.join(full_path, f'{model_name}.pth'))
 
     # save the model hyperparameters
-    save_model_hyperparameters(full_path, window_size, window_overlap, batch_size, hidden_layers, heads, encoders, decoders)
+    save_model_hyperparameters(full_path, window_size, window_overlap, batch_size, hidden_size, heads, encoders, decoders)
 
     return full_path

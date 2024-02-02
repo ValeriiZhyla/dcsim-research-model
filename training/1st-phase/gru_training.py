@@ -11,9 +11,10 @@ NUM_EPOCHS = 200
 WINDOW_SIZE = 200
 WINDOW_OVERLAP_SIZE = 100
 BATCH_SIZE = 32
-HIDDEN_LAYERS = 100
+HIDDEN_SIZE = 100
 INPUT_SIZE = 6
 OUTPUT_SIZE = 5
+LAYERS = 1
 
 model_name = "GRU"
 plot_color = seaborn.color_palette("deep")[0]  # deep blue
@@ -21,9 +22,9 @@ plot_color = seaborn.color_palette("deep")[0]  # deep blue
 
 # Define the GRU Model
 class BiGRUModel(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
+    def __init__(self, input_size, hidden_size, output_size, num_layers):
         super(BiGRUModel, self).__init__()
-        self.gru = nn.GRU(input_size, hidden_size, batch_first=True, bidirectional=True)
+        self.gru = nn.GRU(input_size, hidden_size, num_layers=num_layers, batch_first=True, bidirectional=True)
         self.fc = nn.Linear(hidden_size * 2, output_size)  # Multiply by 2 for bidirectional
 
     def forward(self, x):
@@ -44,7 +45,7 @@ input_columns = ['simulation_id_int', 'simulation_length', 'index', 'flops', 'in
 output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
 
 
-def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size, hidden_layers):
+def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size, hidden_size, layers):
     # Define the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
@@ -56,7 +57,7 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
     train_loader, train_scalers, test_loader, test_scalers = commons.load_data(TRAIN_PATH, TEST_PATH, input_columns, output_columns, batch_size, window_size, window_overlap)
 
     # Initialize the model, loss function, and optimizer
-    model = BiGRUModel(input_size=INPUT_SIZE, hidden_size=hidden_layers, output_size=OUTPUT_SIZE).to(device)
+    model = BiGRUModel(input_size=INPUT_SIZE, hidden_size=hidden_size, output_size=OUTPUT_SIZE, num_layers=layers).to(device)
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
@@ -81,12 +82,12 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
     # Stop timer and print training summary
     end_time = time.time()
     total_time = end_time - start_time
-    commons.print_training_summary(num_epochs, window_size, window_overlap, batch_size, hidden_layers, total_time)
+    commons.print_training_summary(num_epochs, window_size, window_overlap, batch_size, hidden_size, total_time)
 
     return model
 
 
 if __name__ == '__main__':
-    model = train_and_evaluate_model(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_LAYERS)
+    model = train_and_evaluate_model(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_SIZE, LAYERS)
     torch.save(model.state_dict(), 'generated-models/default/gru_weights.pth')
     torch.save(model, 'generated-models/default/gru.pth')

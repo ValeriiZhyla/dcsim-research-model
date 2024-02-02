@@ -11,9 +11,10 @@ NUM_EPOCHS = 200
 WINDOW_SIZE = 200
 WINDOW_OVERLAP_SIZE = 100
 BATCH_SIZE = 128
-HIDDEN_LAYERS = 125
+HIDDEN_SIZE = 125
 INPUT_SIZE = 6
 OUTPUT_SIZE = 5
+LAYERS = 1
 
 model_name = "LSTM"
 plot_color = seaborn.color_palette("deep")[1]  # deep orange
@@ -21,9 +22,9 @@ plot_color = seaborn.color_palette("deep")[1]  # deep orange
 
 # Define the LSTM Model
 class BiLSTMModel(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
+    def __init__(self, input_size, hidden_size, output_size, num_layers):
         super(BiLSTMModel, self).__init__()
-        self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True, bidirectional=True)
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers=num_layers, batch_first=True, bidirectional=True)
         self.fc = nn.Linear(hidden_size * 2, output_size)  # Multiply by 2 for bidirectional
 
     def forward(self, x):
@@ -41,7 +42,8 @@ TEST_PATH = '../../dataset_preparation/2nd-phase/test_dataset.csv'
 input_columns = ['simulation_id_int', 'simulation_length', 'index', 'flops', 'input_files_size', 'output_files_size']
 output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
 
-def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size, hidden_layers):
+
+def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size, hidden_size, layers):
     # Define the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
@@ -53,7 +55,7 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
     train_loader, train_scalers, test_loader, test_scalers = commons.load_data(TRAIN_PATH, TEST_PATH, input_columns, output_columns, batch_size, window_size, window_overlap)
 
     # Initialize the model, loss function, and optimizer
-    model = BiLSTMModel(input_size=INPUT_SIZE, hidden_size=hidden_layers, output_size=OUTPUT_SIZE).to(device)
+    model = BiLSTMModel(input_size=INPUT_SIZE, hidden_size=hidden_size, output_size=OUTPUT_SIZE, num_layers=layers).to(device)
 
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
@@ -78,12 +80,12 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
     # Stop timer and print training summary
     end_time = time.time()
     total_time = end_time - start_time
-    commons.print_training_summary(num_epochs, window_size, window_overlap, batch_size, hidden_layers, total_time)
+    commons.print_training_summary(num_epochs, window_size, window_overlap, batch_size, hidden_size, total_time)
 
     return model
 
 
 if __name__ == '__main__':
-    model = train_and_evaluate_model(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_LAYERS)
+    model = train_and_evaluate_model(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_SIZE, LAYERS)
     torch.save(model.state_dict(), 'generated-models/default/lstm_weights.pth')
     torch.save(model, 'generated-models/default/lstm.pth')

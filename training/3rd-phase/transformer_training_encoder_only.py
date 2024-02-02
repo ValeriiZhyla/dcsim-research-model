@@ -14,10 +14,10 @@ NUM_EPOCHS = 100
 WINDOW_SIZE = 200
 WINDOW_OVERLAP_SIZE = 100
 BATCH_SIZE = 64
-HIDDEN_LAYERS = 128
+hidden_size = 128
 INPUT_SIZE = 4
 OUTPUT_SIZE = 5
-NHEADS = 2  # Ensure this is a divisor of HIDDEN_LAYERS
+NHEADS = 2  # Ensure this is a divisor of hidden_size
 NUM_ENCODER_LAYERS = 2
 
 model_name = "Transformer"
@@ -73,7 +73,7 @@ def train_and_evaluate_model():
     train_loader, train_scalers, test_loader, test_scalers = commons.load_data(TRAIN_PATH, TEST_PATH, input_columns, output_columns, BATCH_SIZE, WINDOW_SIZE, WINDOW_OVERLAP_SIZE)
 
     # Initialize the model
-    model = TransformerModel(input_size=INPUT_SIZE, hidden_size=HIDDEN_LAYERS,
+    model = TransformerModel(input_size=INPUT_SIZE, hidden_size=hidden_size,
                              output_size=OUTPUT_SIZE, nhead=NHEADS,
                              num_encoder_layers=NUM_ENCODER_LAYERS).to(device)
 
@@ -109,7 +109,7 @@ def train_and_evaluate_model():
     # Stop timer and print training summary
     end_time = time.time()
     total_time = end_time - start_time
-    commons.print_training_summary(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_LAYERS, total_time)
+    commons.print_training_summary(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, hidden_size, total_time)
 
     # Evaluate the model with test data
     predictions_array, actual_values_array = commons.evaluate_model_get_predictions_and_actual_values(model, test_loader, device)

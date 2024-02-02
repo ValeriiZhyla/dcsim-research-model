@@ -12,9 +12,9 @@ NUM_EPOCHS = 250
 WINDOW_SIZE = 200
 WINDOW_OVERLAP_SIZE = 100
 BATCH_SIZE = 64
-HIDDEN_LAYERS = 8
+HIDDEN_SIZE = 8
 
-NHEADS = 2  # Ensure this is a divisor of HIDDEN_LAYERS
+NHEADS = 2  # Ensure this is a divisor of hidden_size
 NUM_ENCODER_LAYERS = 2
 
 INPUT_SIZE = 6
@@ -61,7 +61,7 @@ input_columns = ['simulation_id_int', 'simulation_length', 'index', 'flops', 'in
 output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
 
 
-def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size, hidden_layers, nheads, encoder_layers):
+def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size, hidden_size, nheads, encoder_layers):
     # Define the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
@@ -73,7 +73,7 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
     train_loader, train_scalers, test_loader, test_scalers = commons.load_data(TRAIN_PATH, TEST_PATH, input_columns, output_columns, batch_size, window_size, window_overlap)
 
     # Initialize the model
-    model = TransformerEncoderOnly(input_size=INPUT_SIZE, hidden_size=hidden_layers,
+    model = TransformerEncoderOnly(input_size=INPUT_SIZE, hidden_size=hidden_size,
                                    output_size=OUTPUT_SIZE, nhead=nheads,
                                    num_encoder_layers=encoder_layers).to(device)
 
@@ -109,12 +109,12 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
     # Stop timer and print training summary
     end_time = time.time()
     total_time = end_time - start_time
-    commons.print_training_summary(num_epochs, window_size, window_overlap, batch_size, hidden_layers, total_time)
+    commons.print_training_summary(num_epochs, window_size, window_overlap, batch_size, hidden_size, total_time)
 
     return model
 
 
 if __name__ == '__main__':
-    model = train_and_evaluate_model(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_LAYERS, NHEADS, NUM_ENCODER_LAYERS)
+    model = train_and_evaluate_model(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_SIZE, NHEADS, NUM_ENCODER_LAYERS)
     torch.save(model.state_dict(), 'generated-models/default/transformer_encoder_only_weights.pth')
     torch.save(model, 'generated-models/default/transformer_encoder_only.pth')

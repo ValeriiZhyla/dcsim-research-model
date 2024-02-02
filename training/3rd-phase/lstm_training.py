@@ -14,7 +14,7 @@ NUM_EPOCHS = 200
 WINDOW_SIZE = 200
 WINDOW_OVERLAP_SIZE = 100
 BATCH_SIZE = 128
-HIDDEN_LAYERS = 125
+hidden_size = 125
 INPUT_SIZE = 4
 OUTPUT_SIZE = 5
 
@@ -58,7 +58,7 @@ def train_and_evaluate_model():
     train_loader, train_scalers, test_loader, test_scalers = commons.load_data(TRAIN_PATH, TEST_PATH, input_columns, output_columns, BATCH_SIZE, WINDOW_SIZE, WINDOW_OVERLAP_SIZE)
 
     # Initialize the model, loss function, and optimizer
-    model = BiLSTMModel(input_size=INPUT_SIZE, hidden_size=HIDDEN_LAYERS, output_size=OUTPUT_SIZE).to(device)
+    model = BiLSTMModel(input_size=INPUT_SIZE, hidden_size=hidden_size, output_size=OUTPUT_SIZE).to(device)
 
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
@@ -83,7 +83,7 @@ def train_and_evaluate_model():
     # Stop timer and print training summary
     end_time = time.time()
     total_time = end_time - start_time
-    commons.print_training_summary(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_LAYERS, total_time)
+    commons.print_training_summary(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, hidden_size, total_time)
 
     # Evaluate the model with test data
     predictions_array, actual_values_array = commons.evaluate_model_get_predictions_and_actual_values(model, test_loader, device)
