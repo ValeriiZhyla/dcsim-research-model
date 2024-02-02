@@ -4,9 +4,6 @@ import seaborn
 import torch
 import torch.nn as nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-
-import metrics
-import plotting
 from training import commons
 
 # Constants
@@ -15,7 +12,7 @@ WINDOW_SIZE = 200
 WINDOW_OVERLAP_SIZE = 100
 BATCH_SIZE = 128
 HIDDEN_LAYERS = 125
-INPUT_SIZE = 4
+INPUT_SIZE = 6
 OUTPUT_SIZE = 5
 
 model_name = "LSTM"
@@ -40,13 +37,11 @@ class BiLSTMModel(nn.Module):
 
 TRAIN_PATH = '../../dataset_preparation/2nd-phase/train_dataset.csv'
 TEST_PATH = '../../dataset_preparation/2nd-phase/test_dataset.csv'
-# TRAIN_PATH = '../../dataset_preparation/2nd-phase/train_dataset_small.csv'
-# TEST_PATH = '../../dataset_preparation/2nd-phase/test_dataset_small.csv'
 
-input_columns = ['index', 'flops', 'input_files_size', 'output_files_size']
+input_columns = ['simulation_id_int', 'simulation_length', 'index', 'flops', 'input_files_size', 'output_files_size']
 output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
 
-def train_and_evaluate_model():
+def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size, hidden_layers):
     # Define the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
@@ -55,10 +50,10 @@ def train_and_evaluate_model():
     start_time = time.time()
 
     # Load data and scalers
-    train_loader, train_scalers, test_loader, test_scalers = commons.load_data(TRAIN_PATH, TEST_PATH, input_columns, output_columns, BATCH_SIZE, WINDOW_SIZE, WINDOW_OVERLAP_SIZE)
+    train_loader, train_scalers, test_loader, test_scalers = commons.load_data(TRAIN_PATH, TEST_PATH, input_columns, output_columns, batch_size, window_size, window_overlap)
 
     # Initialize the model, loss function, and optimizer
-    model = BiLSTMModel(input_size=INPUT_SIZE, hidden_size=HIDDEN_LAYERS, output_size=OUTPUT_SIZE).to(device)
+    model = BiLSTMModel(input_size=INPUT_SIZE, hidden_size=hidden_layers, output_size=OUTPUT_SIZE).to(device)
 
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
@@ -66,7 +61,7 @@ def train_and_evaluate_model():
 
     # Training loop
     model.train()
-    for epoch in range(NUM_EPOCHS):
+    for epoch in range(num_epochs):
         total_loss = 0
         for inputs, targets in train_loader:
             inputs, targets = inputs.to(device), targets.to(device)
@@ -77,26 +72,18 @@ def train_and_evaluate_model():
             optimizer.step()
             total_loss += loss.item()
         avg_loss = total_loss / len(train_loader)
-        print(f'Epoch [{epoch + 1}/{NUM_EPOCHS}], Average Loss: {avg_loss}')
+        print(f'Epoch [{epoch + 1}/{num_epochs}], Average Loss: {avg_loss}')
         scheduler.step(avg_loss)
 
     # Stop timer and print training summary
     end_time = time.time()
     total_time = end_time - start_time
-    commons.print_training_summary(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_LAYERS, total_time)
+    commons.print_training_summary(num_epochs, window_size, window_overlap, batch_size, hidden_layers, total_time)
 
-    # Evaluate the model with test data
-    predictions_array, actual_values_array = commons.evaluate_model_get_predictions_and_actual_values(model, test_loader, device)
-
-    # Calculate metrics for each output parameter and show them
-    metrics.calculate_and_show_metrics(output_columns, predictions_array, actual_values_array)
-
-    # Denormalize and plot results for each parameter
-    plotting.denorm_and_plot_predicted_actual(output_columns, test_scalers, predictions_array, actual_values_array, model_name, purpose="training")
     return model
 
 
 if __name__ == '__main__':
-    model = train_and_evaluate_model()
-    torch.save(model.state_dict(), 'generated-models/lstm_weights.pth')
-    torch.save(model, 'generated-models/lstm.pth')
+    model = train_and_evaluate_model(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_LAYERS)
+    torch.save(model.state_dict(), 'generated-models/default/lstm_weights.pth')
+    torch.save(model, 'generated-models/default/lstm.pth')
