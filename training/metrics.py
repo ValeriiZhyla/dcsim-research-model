@@ -17,14 +17,14 @@ def save_metrics_latex(results_directory, model_name, purpose, output_columns, m
                    r"\caption{" + model_name + ": " + purpose.capitalize() + " accuracy metrics}",
                    r"\label{table:TODO-PHASE-LABEL/" + model_name.lower() + "-" + purpose.lower() + "-metrics}",
                    r"\renewcommand{\arraystretch}{1.25}",
-                   r"\begin{tabular}{|c||c|>{\columncolor{lightgray}}c|c|>{\columncolor{lightgray}}c|}",
+                   r"\begin{tabular}{c|c>{\columncolor{lightgray}}cc>{\columncolor{lightgray}}c}",
                    r"\hline",
                    r"%\rowcolor{white} % Keeps the header row white",
-                   r"\textbf{} & \textbf{MSE} & \textbf{RMSE} & \textbf{MAE} & \textbf{R\textsuperscript{2}} \\",
-                   r"\hline",
+                   r"\textbf{Parameter} & \textbf{MSE} & \textbf{RMSE} & \textbf{MAE} & \textbf{R\textsuperscript{2}} \\",
                    r"\hline"]
 
     lines_end = [
+        r"\hline",
         r"\end{tabular}",
         r"\end{table}"
     ]
@@ -35,7 +35,6 @@ def save_metrics_latex(results_directory, model_name, purpose, output_columns, m
         name = name.replace("_", "\_")
         line = f"{name} & {str(round(mse_per_param[i], p))} & {str(round(rmse_per_param[i], p))} & {str(round(mae_per_param[i], p))} & {str(round(r_squared_per_param[i], p))} \\\\"
         lines_body.append(line)
-        lines_body.append(r"\hline")
 
     lines = lines_start + lines_body + lines_end
 

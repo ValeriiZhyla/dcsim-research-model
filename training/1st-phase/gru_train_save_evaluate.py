@@ -29,7 +29,11 @@ hyperparameter_combinations = [
     Hyperparameters(epochs=200, window_size=1000, window_overlap=500, batch_size=128, hidden_layers=125),  # more layers, giant window
     Hyperparameters(epochs=200, window_size=50, window_overlap=40, batch_size=128, hidden_layers=10),  # Rolling window, less layers
     Hyperparameters(epochs=200, window_size=50, window_overlap=40, batch_size=128, hidden_layers=50),  # Rolling window, medium layers
-    Hyperparameters(epochs=200, window_size=50, window_overlap=40, batch_size=128, hidden_layers=125)  # Rolling window, more layers
+    Hyperparameters(epochs=200, window_size=50, window_overlap=40, batch_size=128, hidden_layers=125),  # Rolling window, more layers
+    Hyperparameters(epochs=200, window_size=100, window_overlap=90, batch_size=128, hidden_layers=125),  # Rolling window, but larger
+
+    Hyperparameters(epochs=200, window_size=50, window_overlap=0, batch_size=128, hidden_layers=125)  # Rolling window, but larger
+
 ]
 
 for hp in hyperparameter_combinations:
@@ -38,7 +42,7 @@ for hp in hyperparameter_combinations:
     else:
         # Train
         model: gru_training.BiGRUModel = gru_training.train_and_evaluate_model(num_epochs=hp.epochs, window_size=hp.window_size, window_overlap=hp.window_overlap,
-                                                                                  batch_size=hp.batch_size, hidden_layers=hp.hidden_layers)
+                                                                               batch_size=hp.batch_size, hidden_layers=hp.hidden_layers)
         # Save
         directory: str = commons.save_model_and_get_directory(model, gru_training.model_name, epochs=hp.epochs, window_size=hp.window_size, window_overlap=hp.window_overlap,
                                                               batch_size=hp.batch_size, hidden_layers=hp.hidden_layers)

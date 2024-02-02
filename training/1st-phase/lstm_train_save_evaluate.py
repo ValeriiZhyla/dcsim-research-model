@@ -31,7 +31,10 @@ hyperparameter_combinations = [
     Hyperparameters(epochs=200, window_size=50, window_overlap=40, batch_size=128, hidden_layers=125),  # more layers, smaller window
 
     Hyperparameters(epochs=50, window_size=100, window_overlap=80, batch_size=128, hidden_layers=50),  # Rolling window, medium layers
-    Hyperparameters(epochs=50, window_size=100, window_overlap=80, batch_size=128, hidden_layers=125)  # Rolling window, more layers
+    Hyperparameters(epochs=50, window_size=100, window_overlap=80, batch_size=128, hidden_layers=125),  # Rolling window, more layers
+
+    Hyperparameters(epochs=200, window_size=50, window_overlap=0, batch_size=128, hidden_layers=125),  # no overlap
+
 ]
 
 for hp in hyperparameter_combinations:

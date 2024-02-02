@@ -117,7 +117,7 @@ def print_training_summary(num_epochs, window_size, window_overlap_size, batch_s
 
 
 def generate_directory_name_with_hyperparameters(model_name, epochs, window_size, window_overlap, batch_size, hidden_layers, heads=0, encoders=0, decoders=0) -> str:
-    if "transformer" in model_name:
+    if "transformer" in model_name.lower():
         return f"{model_name}_{epochs}ep_{window_size}wd_{window_overlap}wo_{batch_size}bat_{hidden_layers}hl_{heads}hd_{encoders}enc_{decoders}dec"
     else:
         return f"{model_name}_{epochs}ep_{window_size}wd_{window_overlap}wo_{batch_size}bat_{hidden_layers}hl"
