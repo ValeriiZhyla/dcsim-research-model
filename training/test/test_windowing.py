@@ -26,6 +26,24 @@ class TestCreateWindows(unittest.TestCase):
         self.assertEqual(len(windows), 2)
         self.assert_windows_have_expected_structure(df, input_columns, output_columns, overlap_size, window_size, windows)
 
+    def test_correct_windowing_one_simulation_no_overlap_window_size_1(self):
+        # Test that windows are of correct size and overlap
+        df = pd.DataFrame({
+            'simulation_id': [42, 42, 42, 42, 42, 42],
+            'input1': [1, 2, 3, 4, 5, 6],
+            'input2': [8, 9, 10, 11, 12, 13],
+            'output1': [15, 16, 17, 18, 19, 20]
+        })
+        window_size = 1
+        overlap_size = 0
+        input_columns = ['simulation_id', 'input1', 'input2']
+        output_columns = ['output1']
+
+        windows = windowing.create_windows(df, window_size, overlap_size, input_columns, output_columns)
+
+        self.assertEqual(len(windows), 6)
+        self.assert_windows_have_expected_structure(df, input_columns, output_columns, overlap_size, window_size, windows)
+
 
     def test_correct_windowing_one_simulation_no_overlap_small_windows(self):
         # Test that windows are of correct size and overlap
