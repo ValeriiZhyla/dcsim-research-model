@@ -1,0 +1,1 @@
+{"window_size": 100, "window_overlap": 0, "batch_size": 128, "hidden_size": 8, "heads": 2, "encoders": 2, "decoders": 0}

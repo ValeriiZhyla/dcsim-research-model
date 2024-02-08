@@ -1,0 +1,30 @@
+Parameter [job_start]:
+  Mean Squared Error (MSE):               0.0047305
+  Root Mean Squared Error (RMSE):         0.0687784
+  Mean Absolute Error (MAE):              0.0475879
+  R-squared (R^2):                        0.9952695
+=================================
+Parameter [job_end]:
+  Mean Squared Error (MSE):               0.0101697
+  Root Mean Squared Error (RMSE):         0.1008451
+  Mean Absolute Error (MAE):              0.0672463
+  R-squared (R^2):                        0.9898303
+=================================
+Parameter [compute_time]:
+  Mean Squared Error (MSE):               0.0063433
+  Root Mean Squared Error (RMSE):         0.0796448
+  Mean Absolute Error (MAE):              0.0427099
+  R-squared (R^2):                        0.9936567
+=================================
+Parameter [input_files_transfer_time]:
+  Mean Squared Error (MSE):               0.3893786
+  Root Mean Squared Error (RMSE):         0.6240021
+  Mean Absolute Error (MAE):              0.2988964
+  R-squared (R^2):                        0.6106212
+=================================
+Parameter [output_files_transfer_time]:
+  Mean Squared Error (MSE):               0.2876122
+  Root Mean Squared Error (RMSE):         0.5362948
+  Mean Absolute Error (MAE):              0.2098874
+  R-squared (R^2):                        0.7123877
+=================================
