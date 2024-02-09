@@ -1,0 +1,23 @@
+\begin{table}[ht!]
+\centering
+\caption{GRU: Extrapolation accuracy metrics}
+\label{table:TODO-PHASE-LABEL/gru-extrapolation-metrics}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|c||c|>{\columncolor{lightgray}}c|c|>{\columncolor{lightgray}}c|}
+\hline
+%\rowcolor{white} % Keeps the header row white
+\textbf{} & \textbf{MSE} & \textbf{RMSE} & \textbf{MAE} & \textbf{R\textsuperscript{2}} \\
+\hline
+\hline
+job\_start & 0.00188 & 0.04338 & 0.03062 & 0.99812 \\
+\hline
+job\_end & 0.00213 & 0.04621 & 0.0333 & 0.99787 \\
+\hline
+compute\_time & 1.3513 & 1.16245 & 0.89491 & -0.35131 \\
+\hline
+input\_files\_transfer\_time & 1.03798 & 1.01881 & 0.49033 & -0.03799 \\
+\hline
+output\_files\_transfer\_time & 5.74397 & 2.39666 & 1.34998 & -4.74403 \\
+\hline
+\end{tabular}
+\end{table}

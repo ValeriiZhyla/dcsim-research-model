@@ -1,0 +1,18 @@
+\begin{table}[ht!]
+\centering
+\caption{GRU: Interpolation accuracy metrics}
+\label{table:TODO-PHASE-LABEL/gru-interpolation-metrics}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{c|c>{\columncolor{lightgray}}cc>{\columncolor{lightgray}}c}
+\hline
+%\rowcolor{white} % Keeps the header row white
+\textbf{Parameter} & \textbf{MSE} & \textbf{RMSE} & \textbf{MAE} & \textbf{R\textsuperscript{2}} \\
+\hline
+job\_start & 0.00455 & 0.06747 & 0.04619 & 0.99545 \\
+job\_end & 0.00981 & 0.09907 & 0.06512 & 0.99019 \\
+compute\_time & 0.0062 & 0.07874 & 0.04082 & 0.9938 \\
+input\_files\_transfer\_time & 0.38143 & 0.6176 & 0.2886 & 0.61857 \\
+output\_files\_transfer\_time & 0.32334 & 0.56863 & 0.20964 & 0.67666 \\
+\hline
+\end{tabular}
+\end{table}

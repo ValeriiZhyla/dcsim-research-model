@@ -1,0 +1,23 @@
+\begin{table}[ht!]
+\centering
+\caption{LSTM: Interpolation accuracy metrics}
+\label{table:TODO-PHASE-LABEL/lstm-interpolation-metrics}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|c||c|>{\columncolor{lightgray}}c|c|>{\columncolor{lightgray}}c|}
+\hline
+%\rowcolor{white} % Keeps the header row white
+\textbf{} & \textbf{MSE} & \textbf{RMSE} & \textbf{MAE} & \textbf{R\textsuperscript{2}} \\
+\hline
+\hline
+job\_start & 0.00209 & 0.04569 & 0.03041 & 0.99756 \\
+\hline
+job\_end & 0.00212 & 0.04605 & 0.03091 & 0.99753 \\
+\hline
+compute\_time & 0.76079 & 0.87223 & 0.66085 & 0.14653 \\
+\hline
+input\_files\_transfer\_time & 0.00742 & 0.08611 & 0.03994 & 0.98468 \\
+\hline
+output\_files\_transfer\_time & 0.1839 & 0.42884 & 0.24454 & 0.70209 \\
+\hline
+\end{tabular}
+\end{table}

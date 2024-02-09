@@ -1,0 +1,23 @@
+\begin{table}[ht!]
+\centering
+\caption{LSTM: Extrapolation accuracy metrics}
+\label{table:TODO-PHASE-LABEL/lstm-extrapolation-metrics}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|c||c|>{\columncolor{lightgray}}c|c|>{\columncolor{lightgray}}c|}
+\hline
+%\rowcolor{white} % Keeps the header row white
+\textbf{} & \textbf{MSE} & \textbf{RMSE} & \textbf{MAE} & \textbf{R\textsuperscript{2}} \\
+\hline
+\hline
+job\_start & 0.00795 & 0.08915 & 0.04596 & 0.99193 \\
+\hline
+job\_end & 0.00834 & 0.09132 & 0.0481 & 0.99154 \\
+\hline
+compute\_time & 1.2319 & 1.10991 & 0.841 & -0.23855 \\
+\hline
+input\_files\_transfer\_time & 0.58384 & 0.76409 & 0.4152 & 0.08659 \\
+\hline
+output\_files\_transfer\_time & 1.3977 & 1.18224 & 0.89917 & -0.48245 \\
+\hline
+\end{tabular}
+\end{table}

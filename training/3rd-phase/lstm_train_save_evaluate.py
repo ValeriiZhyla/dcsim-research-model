@@ -69,9 +69,12 @@ hyperparameter_combinations = [
     Hyperparameters(epochs=350, window_size=100, window_overlap=0, batch_size=256, hidden_size=20, layers=1),
     Hyperparameters(epochs=350, window_size=100, window_overlap=0, batch_size=512, hidden_size=20, layers=1),
 
-    Hyperparameters(epochs=350, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=1)
+    Hyperparameters(epochs=350, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=85, window_size=150, window_overlap=0, batch_size=128, hidden_size=160, layers=1), # Try this
+    # Hyperparameters(epochs=85, window_size=150, window_overlap=0, batch_size=128, hidden_size=192, layers=1), # And this
+
     # Best model: Hyperparameters(epochs=350, window_size=100, window_overlap=0, batch_size=128, hidden_size=20, layers=1)
-    # 200 epoch
+    # 90 epoch
 ]
 
 for hp in hyperparameter_combinations:
