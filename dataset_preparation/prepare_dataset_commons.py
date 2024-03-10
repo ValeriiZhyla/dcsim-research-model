@@ -40,6 +40,11 @@ def add_dataset_node_index(df, node_index):
     return df
 
 
+def add_submission_time(df, submission_time):
+    df['submission_time'] = submission_time
+    return df
+
+
 def add_job_node_index(df, nodes_df):
     machine_dict = dict(zip(nodes_df['name'], nodes_df['index']))
     # Trim spaces from machine_name values in df (bug in exporter for old data)
@@ -105,4 +110,3 @@ def add_simulation_id_integer(df):
     df['simulation_id_int'] = df['simulation_id'].map(element_to_int)
 
     return df
-

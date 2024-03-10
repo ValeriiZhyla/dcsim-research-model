@@ -8,7 +8,8 @@ from PIL.Image import Palette
 #directory = r"D:\KIT\Master Thesis\dcsim-research-model\training\2nd-phase\plots"
 
 #directory = r"D:\KIT\Master Thesis\dcsim-research-model\trained-models\1st-phase"
-directory = r"D:\KIT\Master Thesis\dcsim-research-model\trained-models\2nd-phase"
+#directory = r"D:\KIT\Master Thesis\dcsim-research-model\trained-models\2nd-phase"
+directory = r"D:\KIT\Master Thesis\dcsim-research-model\trained-models\3rd-phase"
 
 # Iterate over all subdirectories and files in the directory
 for root, dirs, files in os.walk(directory):

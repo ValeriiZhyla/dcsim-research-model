@@ -70,6 +70,7 @@ hyperparameter_combinations = [
     Hyperparameters(epochs=230, window_size=150, window_overlap=0, batch_size=256, hidden_size=128, layers=1),
     Hyperparameters(epochs=230, window_size=150, window_overlap=0, batch_size=512, hidden_size=128, layers=1),
 
+    #     Hyperparameters(epochs=230, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1), is the best
 ]
 
 

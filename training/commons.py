@@ -47,7 +47,6 @@ def load_test_data(path_test, input_columns, output_columns, batch_size, window_
 
     return test_loader, test_scalers
 
-
 def create_tensor_dataset(windowed_data):
     # Convert windowed data to tensors
     inputs, outputs = zip(*windowed_data)

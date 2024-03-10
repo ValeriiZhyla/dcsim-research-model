@@ -75,6 +75,12 @@ hyperparameter_combinations = [
 
     # Best model: Hyperparameters(epochs=350, window_size=100, window_overlap=0, batch_size=128, hidden_size=20, layers=1)
     # 90 epoch
+
+    # Check MAE loss
+    Hyperparameters(epochs=90, window_size=100, window_overlap=0, batch_size=128, hidden_size=20, layers=1),
+    Hyperparameters(epochs=500, window_size=100, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
+    Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=128, layers=4)
+
 ]
 
 for hp in hyperparameter_combinations:
