@@ -1,5 +1,6 @@
 import time
 
+import numpy as np
 import pandas as pd
 import seaborn
 import torch
@@ -60,13 +61,21 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
     train_scalers, train_df_numerical_scaled_categorical_original = commons.df_fit_transform_and_get_scalers(train_df, scenarios.input_columns_jobs_numerical + scenarios.output_columns_jobs_numerical)
 
     # windows with scaled numerical and original categorical data
-    train_windows = windowing.create_windows(train_df_numerical_scaled_categorical_original, window_size=window_size, overlap_size=WINDOW_OVERLAP_SIZE, input_columns=scenarios.input_columns_jobs_numerical + scenarios.input_columns_jobs_categorical,
+    train_windows = windowing.create_windows(train_df_numerical_scaled_categorical_original, window_size=window_size, overlap_size=window_overlap, input_columns=scenarios.input_columns_jobs_numerical + scenarios.input_columns_jobs_categorical,
                                              output_columns=scenarios.output_columns_jobs_numerical + scenarios.output_columns_jobs_categorical)
 
+    # df with nodes and df with links
+    nodes_df, links_df = commons.load_nodes_and_links_padded(scenario.nodes_aux_path, scenario.links_aux_path, scenarios.nodes_columns_numerical + scenarios.nodes_columns_categorical,
+                                                             scenarios.links_columns_numerical + scenarios.links_columns_categorical, window_size)
+    # df with nodes and df with links as nparrays
+    nodes_df_np = nodes_df.to_numpy()
+    links_df_np = links_df.to_numpy()
 
+    # add the aux data to each input window
+    train_windows_with_aux = [(np.hstack((window[0], nodes_df_np, links_df_np)), window[1]) for window in train_windows]
 
     # data should include categorical and aux data
-    train_dataset = commons.create_tensor_dataset(train_windows)
+    train_dataset = commons.create_tensor_dataset(train_windows_with_aux)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
 
@@ -82,7 +91,7 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
     for epoch in range(num_epochs):
         total_loss = 0
         for inputs, targets in train_loader:
-            inputs, targets = inputs.to(device), targets.to(device)
+            inputs_jobs, targets = inputs.to(device), targets.to(device)
             optimizer.zero_grad()
             outputs = model(inputs)
             loss = criterion(outputs, targets)

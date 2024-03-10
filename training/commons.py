@@ -64,6 +64,15 @@ def create_tensor_dataset(windowed_data):
     return dataset
 
 
+def load_nodes_and_links_padded(path_nodes, path_links, nodes_columns, links_columns, window_size):
+    nodes_df = pd.read_csv(path_nodes, usecols=nodes_columns, delimiter=';')
+    links_df = pd.read_csv(path_links, usecols=links_columns, delimiter=';')
+
+    nodes_df_padded = pd.concat([nodes_df, pd.DataFrame(np.zeros((window_size - nodes_df.shape[0], len(nodes_df.columns))), columns=nodes_columns)], ignore_index=True)
+    links_df_padded = pd.concat([links_df, pd.DataFrame(np.zeros((window_size - links_df.shape[0], len(links_df.columns))), columns=links_columns)], ignore_index=True)
+
+    return nodes_df_padded, links_df_padded
+
 def df_fit_transform_and_get_scalers(df, columns_to_scale):
     scalers = {col: StandardScaler() for col in columns_to_scale}
 
