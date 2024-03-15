@@ -31,7 +31,9 @@ input_columns_jobs_numerical = ['simulation_length', 'index', 'submission_time',
 input_columns_jobs_categorical = ['dataset_node_index']
 
 output_columns_jobs_numerical = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
-output_columns_jobs_categorical = ['machine_index']
+# output_columns_jobs_categorical = ['machine_index']
+output_columns_jobs_categorical = []
+
 
 nodes_columns_numerical = ['speed_mf', 'cores', 'ram_gib', 'disk_tib', 'disk_read_bw_mbps', 'disk_write_bw_mbps']
 nodes_columns_categorical = ['index', 'type_index', 'in_cluster']

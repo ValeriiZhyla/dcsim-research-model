@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from torch.utils.data import TensorDataset, DataLoader
 
 from training import windowing
+from training import commons
 
 HYPERPARAMETERS_FILE = 'hyperparameters.json'
 GENERATED_MODELS_DIRECTORY = 'generated-models'
@@ -47,6 +48,43 @@ def load_test_data(path_test, input_columns, output_columns, batch_size, window_
 
     return test_loader, test_scalers
 
+
+def load_data_with_platform_information(path,
+                                        nodes_aux_path, links_aux_path,
+                                        input_columns_jobs_numerical, input_columns_jobs_categorical,
+                                        output_columns_jobs_numerical, output_columns_jobs_categorical,
+                                        nodes_columns_numerical, nodes_columns_categorical,
+                                        links_columns_numerical, links_columns_categorical,
+                                        window_size, window_overlap, batch_size, do_shuffle=False):
+    test_df = pd.read_csv(path, delimiter=';')
+
+    # Fit the scalers on the whole training dataset
+    scalers, test_df_numerical_scaled_categorical_original = df_fit_transform_and_get_scalers(test_df, input_columns_jobs_numerical + output_columns_jobs_numerical)
+
+    # windows with scaled numerical and original categorical data
+    test_windows = windowing.create_windows(test_df_numerical_scaled_categorical_original, window_size=window_size, overlap_size=window_overlap,
+                                            input_columns=input_columns_jobs_numerical + input_columns_jobs_categorical,
+                                            output_columns=output_columns_jobs_numerical + output_columns_jobs_categorical)
+
+    # df with nodes and df with links
+    nodes_df, links_df = commons.load_nodes_and_links_padded(nodes_aux_path, links_aux_path,
+                                                             nodes_columns_numerical + nodes_columns_categorical,
+                                                             links_columns_numerical + links_columns_categorical, window_size)
+
+    # df with nodes and df with links as nparrays
+    nodes_df_np = nodes_df.to_numpy()
+    links_df_np = links_df.to_numpy()
+
+    # add the aux data to each input window
+    test_windows_with_aux = [(np.hstack((window[0], nodes_df_np, links_df_np)), window[1]) for window in test_windows]
+
+    dataset = create_tensor_dataset(test_windows_with_aux)
+
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=do_shuffle)
+
+    return loader, scalers
+
+
 def create_tensor_dataset(windowed_data):
     # Convert windowed data to tensors
     inputs, outputs = zip(*windowed_data)
@@ -72,6 +110,7 @@ def load_nodes_and_links_padded(path_nodes, path_links, nodes_columns, links_col
     links_df_padded = pd.concat([links_df, pd.DataFrame(np.zeros((window_size - links_df.shape[0], len(links_df.columns))), columns=links_columns)], ignore_index=True)
 
     return nodes_df_padded, links_df_padded
+
 
 def df_fit_transform_and_get_scalers(df, columns_to_scale):
     scalers = {col: StandardScaler() for col in columns_to_scale}

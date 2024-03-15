@@ -1,3 +1,4 @@
+import os
 import time
 
 import numpy as np
@@ -13,21 +14,18 @@ from training import commons
 import scenarios
 
 # Constants
-NUM_EPOCHS = 200
+NUM_EPOCHS = 25
 WINDOW_SIZE = 200
-WINDOW_OVERLAP_SIZE = 100
+WINDOW_OVERLAP_SIZE = 0
 BATCH_SIZE = 128
-HIDDEN_SIZE = 125
-INPUT_SIZE = 6
+HIDDEN_SIZE = 512
+INPUT_SIZE = 22
 OUTPUT_SIZE = 5
-LAYERS = 1
+LAYERS = 4
 
 model_name = "LSTM"
 plot_color = seaborn.color_palette("deep")[1]  # deep orange
 
-# Constants
-NUM_EPOCHS_ON_EACH_SCENARIO = 100
-NUM_ITERATIONS_OVER_ALL_SCENARIOS = 10
 
 # Define the LSTM Model
 class BiLSTMModel(nn.Module):
@@ -54,30 +52,13 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
     start_time = time.time()
     scenario = scenarios.main_scenario
 
-    # Load data and scalers
-    train_df = pd.read_csv(scenario.train_dataset_path, delimiter=';')
-
-    # Fit the scalers on the whole training dataset for numerical columns
-    train_scalers, train_df_numerical_scaled_categorical_original = commons.df_fit_transform_and_get_scalers(train_df, scenarios.input_columns_jobs_numerical + scenarios.output_columns_jobs_numerical)
-
-    # windows with scaled numerical and original categorical data
-    train_windows = windowing.create_windows(train_df_numerical_scaled_categorical_original, window_size=window_size, overlap_size=window_overlap, input_columns=scenarios.input_columns_jobs_numerical + scenarios.input_columns_jobs_categorical,
-                                             output_columns=scenarios.output_columns_jobs_numerical + scenarios.output_columns_jobs_categorical)
-
-    # df with nodes and df with links
-    nodes_df, links_df = commons.load_nodes_and_links_padded(scenario.nodes_aux_path, scenario.links_aux_path, scenarios.nodes_columns_numerical + scenarios.nodes_columns_categorical,
-                                                             scenarios.links_columns_numerical + scenarios.links_columns_categorical, window_size)
-    # df with nodes and df with links as nparrays
-    nodes_df_np = nodes_df.to_numpy()
-    links_df_np = links_df.to_numpy()
-
-    # add the aux data to each input window
-    train_windows_with_aux = [(np.hstack((window[0], nodes_df_np, links_df_np)), window[1]) for window in train_windows]
-
-    # data should include categorical and aux data
-    train_dataset = commons.create_tensor_dataset(train_windows_with_aux)
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-
+    train_loader, train_scalers = commons.load_data_with_platform_information(
+        scenario.train_dataset_path, scenario.nodes_aux_path, scenario.links_aux_path,
+        scenarios.input_columns_jobs_numerical, scenarios.input_columns_jobs_categorical,
+        scenarios.output_columns_jobs_numerical, scenarios.output_columns_jobs_categorical,
+        scenarios.nodes_columns_numerical, scenarios.nodes_columns_categorical,
+        scenarios.links_columns_numerical, scenarios.links_columns_categorical,
+        window_size, window_overlap, batch_size, do_shuffle=True)
 
     # Initialize the model, loss function, and optimizer
     model = BiLSTMModel(input_size=INPUT_SIZE, hidden_size=hidden_size, output_size=OUTPUT_SIZE, num_layers=layers).to(device)
@@ -91,7 +72,7 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
     for epoch in range(num_epochs):
         total_loss = 0
         for inputs, targets in train_loader:
-            inputs_jobs, targets = inputs.to(device), targets.to(device)
+            inputs, targets = inputs.to(device), targets.to(device)
             optimizer.zero_grad()
             outputs = model(inputs)
             loss = criterion(outputs, targets)
@@ -112,5 +93,7 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
 
 if __name__ == '__main__':
     model = train_and_evaluate_model(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_SIZE, LAYERS)
-    torch.save(model.state_dict(), 'generated-models/default/lstm_weights.pth')
-    torch.save(model, 'generated-models/default/lstm.pth')
+    dir = f"generated-models/{model_name}_{LAYERS}layer_{HIDDEN_SIZE}hs"
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+    torch.save(model, f"{dir}/lstm_base.pth")

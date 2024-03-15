@@ -40,7 +40,7 @@ train_df_with_dataset_location = pdc.add_dataset_node_index(train_df_original, n
 test_df_with_dataset_location = pdc.add_dataset_node_index(test_df_original, node_index=DATASET_LOCATION_INDEX)
 extrapolation_df_with_dataset_location= pdc.add_dataset_node_index(extrapolation_df_original, node_index=DATASET_LOCATION_INDEX)
 
-# Add column with dataset location node
+# Add column with submission time
 train_df_with_submission_time = pdc.add_submission_time(train_df_original, submission_time=SUBMISSION_TIME)
 test_df_with_submission_time = pdc.add_submission_time(test_df_original, submission_time=SUBMISSION_TIME)
 extrapolation_df_with_submission_time = pdc.add_submission_time(extrapolation_df_with_dataset_location, submission_time=SUBMISSION_TIME)

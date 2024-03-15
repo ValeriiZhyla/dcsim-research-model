@@ -11,6 +11,7 @@ import prepare_dataset_commons as pdc
 # Configuration
 DATASET_LOCATION_INDEX = 17
 NODES_FILE = 'nodes_aux.csv'
+SUBMISSION_TIME = 0
 
 PLATFORM_FILE_NAME = 'WLCG_disklessTier2_reduced100-storage-is-cache-and-cache-is-storage.xml'
 WORKLOAD_FILE_NAME_PREFIX = 'T2_DE_DESY_workloads_'
@@ -31,12 +32,17 @@ test_df_original = pdc.get_dataset(platform=PLATFORM_FILE_NAME, workload_prefix=
 train_df_with_dataset_location = pdc.add_dataset_node_index(train_df_original, node_index=DATASET_LOCATION_INDEX)
 test_df_with_dataset_location = pdc.add_dataset_node_index(test_df_original, node_index=DATASET_LOCATION_INDEX)
 
+# Add column with submission time
+train_df_with_submission_time = pdc.add_submission_time(train_df_original, submission_time=SUBMISSION_TIME)
+test_df_with_submission_time = pdc.add_submission_time(test_df_original, submission_time=SUBMISSION_TIME)
+
 # Add column with node index
 nodes_df = pd.read_csv(NODES_FILE, sep=";")
-train_df_with_node_index = pdc.add_job_node_index(train_df_with_dataset_location, nodes_df=nodes_df)
-test_df_with_node_index = pdc.add_job_node_index(test_df_with_dataset_location, nodes_df=nodes_df)
+train_df_with_node_index = pdc.add_job_node_index(train_df_with_submission_time, nodes_df=nodes_df)
+test_df_with_node_index = pdc.add_job_node_index(test_df_with_submission_time, nodes_df=nodes_df)
 
 # Save files
 train_df_with_node_index.to_csv(OUTPUT_TRAINING_FILE, index=False, sep=";")
 test_df_with_node_index.to_csv(OUTPUT_TEST_FILE, index=False, sep=";")
+
 

@@ -55,3 +55,45 @@ def apply_model_to_data(model, model_name, results_directory, dataset_path, plot
     if create_kde:
         # Create KDE plot
         plotting.plot_kde(output_columns, predictions_array_cleaned, actual_values_array_cleaned, model_name, results_directory, color_name=plot_color, purpose=purpose)
+
+
+def apply_model_to_data_with_platform_information(model, model_name, results_directory,
+                                                  dataset_path, nodes_path, links_path,
+                                                  input_columns_jobs_numerical, input_columns_jobs_categorical,
+                                                  output_columns_jobs_numerical, output_columns_jobs_categorical,
+                                                  nodes_columns_numerical, nodes_columns_categorical,
+                                                  links_columns_numerical, links_columns_categorical,
+                                                  plot_color, purpose,
+                                                  batch_size, window_size, window_overlap_size,
+                                                  create_plots=True, create_kde=True):
+    test_loader, test_scalers = commons.load_data_with_platform_information(dataset_path, nodes_path, links_path,
+                                                                            input_columns_jobs_numerical, input_columns_jobs_categorical,
+                                                                            output_columns_jobs_numerical, output_columns_jobs_categorical,
+                                                                            nodes_columns_numerical, nodes_columns_categorical,
+                                                                            links_columns_numerical, links_columns_categorical,
+                                                                            window_size, window_overlap_size, batch_size)
+
+    # Define the device
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print("Using device:", device)
+
+    model.to(device)
+
+    # Evaluate the model with test data
+    predictions_array, actual_values_array, actual_inputs_array = commons.evaluate_model_get_predictions_and_actual_values(model, test_loader, device)
+
+    # Find and remove all duplicates, that are caused by overlapping windows and padding
+    indexes_of_duplicates = find_indexes_of_all_duplicates_except_first_occurrence(actual_inputs_array)
+    predictions_array_cleaned, actual_values_array_cleaned, actual_inputs_array_cleaned = remove_duplicates(indexes_of_duplicates, predictions_array, actual_values_array,
+                                                                                                            actual_inputs_array)
+    # Calculate metrics for each output parameter and show them
+    metrics.calculate_and_show_metrics(results_directory, model_name, purpose, output_columns_jobs_numerical + output_columns_jobs_categorical, predictions_array_cleaned, actual_values_array_cleaned)
+
+    if create_plots:
+        # Denormalize and plot results for each parameter
+        plotting.denorm_and_plot_predicted_actual(output_columns_jobs_numerical + output_columns_jobs_categorical, test_scalers, predictions_array_cleaned, actual_values_array_cleaned, model_name, results_directory,
+                                                  color_name=plot_color, purpose=purpose, add_help_line=True)
+
+    if create_kde:
+        # Create KDE plot
+        plotting.plot_kde(output_columns_jobs_numerical + output_columns_jobs_categorical, predictions_array_cleaned, actual_values_array_cleaned, model_name, results_directory, color_name=plot_color, purpose=purpose)
