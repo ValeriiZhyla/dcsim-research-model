@@ -1,4 +1,5 @@
 import gru_training
+from evaluation import gru_interpolation
 from training import commons
 import gru_extrapolation_x5
 
@@ -25,12 +26,12 @@ class Hyperparameters:
 
 
 hyperparameter_combinations = [
-    Hyperparameters("1", "../../dataset_preparation/evaluation/1", epochs=10000, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
-    Hyperparameters("10", "../../dataset_preparation/evaluation/10", epochs=5000, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
-    Hyperparameters("20", "../../dataset_preparation/evaluation/20", epochs=3000, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
-    Hyperparameters("50", "../../dataset_preparation/evaluation/50", epochs=2000, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
-    Hyperparameters("100", "../../dataset_preparation/evaluation/100", epochs=1000, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
-    Hyperparameters("150", "../../dataset_preparation/evaluation/150", epochs=1000, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
+    Hyperparameters("1", "../../dataset_preparation/evaluation/1", epochs=1000, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
+    Hyperparameters("10", "../../dataset_preparation/evaluation/10", epochs=1000, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
+    Hyperparameters("20", "../../dataset_preparation/evaluation/20", epochs=1000, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
+    Hyperparameters("50", "../../dataset_preparation/evaluation/50", epochs=1000, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
+    Hyperparameters("100", "../../dataset_preparation/evaluation/100", epochs=500, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
+    Hyperparameters("150", "../../dataset_preparation/evaluation/150", epochs=500, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
     Hyperparameters("200", "../../dataset_preparation/evaluation/200", epochs=500, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
     Hyperparameters("300", "../../dataset_preparation/evaluation/300", epochs=300, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
     Hyperparameters("400", "../../dataset_preparation/evaluation/400", epochs=300, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1),
@@ -49,6 +50,10 @@ for hp in hyperparameter_combinations:
         directory: str = commons.save_model_and_get_directory(model, gru_training.model_name, epochs=hp.epochs, window_size=hp.window_size, window_overlap=hp.window_overlap,
                                                               batch_size=hp.batch_size, hidden_size=hp.hidden_size, layers=hp.layers, prefix=hp.prefix)
         print(f"Model trained and saved in {directory}")
+
+        # Evaluate: Interpolation
+        gru_interpolation.evaluate(model, gru_training.model_name, directory, hp.batch_size, hp.window_size, hp.window_overlap, hp.dataset_directory)
+        print(f"Model evaluated: interpolation")
 
         # Evaluate: Extrapolation
         gru_extrapolation_x5.evaluate(model, gru_training.model_name, directory, hp.batch_size, hp.window_size, hp.window_overlap, hp.dataset_directory)

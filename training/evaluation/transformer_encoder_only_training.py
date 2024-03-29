@@ -1,3 +1,4 @@
+import os
 import time
 
 import seaborn
@@ -17,7 +18,7 @@ HIDDEN_SIZE = 8
 NHEADS = 2  # Ensure this is a divisor of hidden_size
 NUM_ENCODER_LAYERS = 2
 
-INPUT_SIZE = 6
+INPUT_SIZE = 5
 OUTPUT_SIZE = 5
 
 model_name = "Transformer"
@@ -52,14 +53,15 @@ class TransformerEncoderOnly(nn.Module):
 
         return output
 
-TRAIN_PATH = '../../dataset_preparation/3rd-phase/train_dataset.csv'
-TEST_PATH = '../../dataset_preparation/3rd-phase/test_dataset.csv'
+TRAIN_FILE_NAME = 'train_dataset.csv'
 
-input_columns = ['simulation_id_int', 'simulation_length', 'index', 'flops', 'input_files_size', 'output_files_size']
+
+# input_columns = ['simulation_length', 'index']
+# input_columns = ['simulation_id_int', 'simulation_length', 'index', 'flops', 'input_files_size', 'output_files_size']
+input_columns = ['simulation_length', 'index', 'flops', 'input_files_size', 'output_files_size']
 output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
 
-
-def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size, hidden_size, nheads, encoder_layers):
+def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size, hidden_size, nheads, encoder_layers, dataset_directory):
     # Define the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
@@ -68,7 +70,7 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
     start_time = time.time()
 
     # Load data and scalers
-    train_loader, train_scalers, test_loader, test_scalers = commons.load_data(TRAIN_PATH, TEST_PATH, input_columns, output_columns, batch_size, window_size, window_overlap)
+    train_loader, train_scalers = commons.load_train_data(os.path.join(dataset_directory, TRAIN_FILE_NAME), input_columns, output_columns, batch_size, window_size, window_overlap)
 
     # Initialize the model
     model = TransformerEncoderOnly(input_size=INPUT_SIZE, hidden_size=hidden_size,
@@ -113,6 +115,6 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
 
 
 if __name__ == '__main__':
-    model = train_and_evaluate_model(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_SIZE, NHEADS, NUM_ENCODER_LAYERS)
+    model = train_and_evaluate_model(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_SIZE, NHEADS, NUM_ENCODER_LAYERS, "")
     torch.save(model.state_dict(), 'generated-models/default/transformer_encoder_only_weights.pth')
     torch.save(model, 'generated-models/default/transformer_encoder_only.pth')

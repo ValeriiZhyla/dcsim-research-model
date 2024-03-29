@@ -39,9 +39,9 @@ def denorm_and_plot_predicted_actual(output_columns, output_scalers, predictions
         # Create the scatter plot
         plt.figure(figsize=(6, 6))
         plot = seaborn.scatterplot(data=data_for_plot, x='Actual Values', y='Predictions', alpha=0.1, color=color_name)
-        plt.title(f'{label} [{model_name}]', fontweight='bold', pad=20, fontsize=14)
-        plot.set_xlabel(plot.get_xlabel(), fontdict={'weight': 'bold'}, labelpad=15, fontsize=14),
-        plot.set_ylabel(plot.get_ylabel(), fontdict={'weight': 'bold'}, labelpad=15, fontsize=14)
+        plt.title(f'{label} [{model_name}]', fontweight='bold', pad=20, fontsize=16)
+        plot.set_xlabel(plot.get_xlabel(), fontdict={'weight': 'bold'}, labelpad=15, fontsize=16),
+        plot.set_ylabel(plot.get_ylabel(), fontdict={'weight': 'bold'}, labelpad=15, fontsize=16)
 
         plots_directory = os.path.join(results_directory, os.path.join("plots", os.path.join("accuracy", purpose)))
         if not os.path.exists(plots_directory):
@@ -65,7 +65,7 @@ def denorm_and_plot_predicted_actual(output_columns, output_scalers, predictions
             ax.set_xlim(xlim)
             ax.set_ylim(ylim)
             # Add legend to the plot
-            plt.legend()
+            plt.legend(fontsize='x-large')
 
         plt.savefig(file_name, dpi=200, bbox_inches='tight', format='png')
         plt.show()
@@ -91,12 +91,12 @@ def plot_kde(output_columns, predictions_array, actual_values_array, model_name,
         seaborn.kdeplot(data=data_for_plot, x='Predictions', label='Predictions', color=color_name, fill=True, linewidth=2)
 
         # Set title and labels
-        plt.title(f'{label} KDE [{model_name}]', fontweight='bold', fontsize=14)
-        plt.xlabel('Values', fontweight='bold', fontsize=14)
-        plt.ylabel('Density', fontweight='bold', fontsize=14)
+        plt.title(f'{label} [{model_name}]', fontweight='bold', fontsize=16)
+        plt.xlabel('Values', fontweight='bold', fontsize=16)
+        plt.ylabel('Density', fontweight='bold', fontsize=16)
 
         # Add legend
-        plt.legend()
+        plt.legend(fontsize='x-large')
 
         plots_directory = os.path.join(results_directory, os.path.join("plots", os.path.join("kde", purpose)))
         if not os.path.exists(plots_directory):
