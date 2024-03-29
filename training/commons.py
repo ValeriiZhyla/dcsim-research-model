@@ -33,6 +33,19 @@ def load_data(path_train, path_test, input_columns, output_columns, batch_size, 
 
     return train_loader, train_scalers, test_loader, test_scalers
 
+def load_train_data(path_train, input_columns, output_columns, batch_size, window_size, window_overlap_size):
+    train_df = pd.read_csv(path_train, delimiter=';')
+
+    # Fit the scalers on the whole training dataset
+    train_scalers, train_df_scaled = df_fit_transform_and_get_scalers(train_df, input_columns + output_columns)
+
+    train_windows = windowing.create_windows(train_df_scaled, window_size=window_size, overlap_size=window_overlap_size, input_columns=input_columns, output_columns=output_columns)
+
+    train_dataset = create_tensor_dataset(train_windows)
+
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+
+    return train_loader, train_scalers
 
 def load_test_data(path_test, input_columns, output_columns, batch_size, window_size, window_overlap_size):
     test_df = pd.read_csv(path_test, delimiter=';')
@@ -163,15 +176,19 @@ def print_training_summary(num_epochs, window_size, window_overlap_size, batch_s
     print("=================================")
 
 
-def generate_directory_name_with_hyperparameters(model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads=0, encoders=1, decoders=0, layers=1) -> str:
-    if "transformer" in model_name.lower():
-        return f"{model_name}_{epochs}ep_{window_size}wd_{window_overlap}wo_{batch_size}bat_{hidden_size}hs_{heads}hd_{encoders}enc_{decoders}dec"
+def generate_directory_name_with_hyperparameters(model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads=0, encoders=1, decoders=0, layers=1, prefix=None) -> str:
+    if prefix is None:
+        prefix = ""
     else:
-        return f"{model_name}_{epochs}ep_{window_size}wd_{window_overlap}wo_{batch_size}bat_{hidden_size}hs_{layers}la"
+        prefix = prefix + "_"
+    if "transformer" in model_name.lower():
+        return f"{model_name}_{prefix}{epochs}ep_{window_size}wd_{window_overlap}wo_{batch_size}bat_{hidden_size}hs_{heads}hd_{encoders}enc_{decoders}dec"
+    else:
+        return f"{model_name}_{prefix}{epochs}ep_{window_size}wd_{window_overlap}wo_{batch_size}bat_{hidden_size}hs_{layers}la"
 
 
-def directory_name_with_hyperparameters_already_exists(model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads=0, encoders=0, decoders=0, layers=0) -> bool:
-    directory = generate_directory_name_with_hyperparameters(model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads, encoders, decoders, layers)
+def directory_name_with_hyperparameters_already_exists(model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads=0, encoders=0, decoders=0, layers=0, prefix=None) -> bool:
+    directory = generate_directory_name_with_hyperparameters(model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads, encoders, decoders, layers, prefix)
     full_path = os.path.join(GENERATED_MODELS_DIRECTORY, directory)
 
     if os.path.exists(full_path):
@@ -188,8 +205,8 @@ def save_model_hyperparameters(directory, window_size, window_overlap, batch_siz
         json.dump(hyperparameters, file)
 
 
-def save_model_and_get_directory(model, model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads=0, encoders=0, decoders=0, layers=0) -> str:
-    directory = generate_directory_name_with_hyperparameters(model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads, encoders, decoders, layers)
+def save_model_and_get_directory(model, model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads=0, encoders=0, decoders=0, layers=0, prefix=None) -> str:
+    directory = generate_directory_name_with_hyperparameters(model_name, epochs, window_size, window_overlap, batch_size, hidden_size, heads, encoders, decoders, layers, prefix)
     full_path = os.path.join(GENERATED_MODELS_DIRECTORY, directory)
 
     # create the directory if it doesn't exist
