@@ -34,13 +34,18 @@ hyperparameter_combinations = [
     Hyperparameters("1", "../../dataset_preparation/evaluation/1", epochs=2000, window_size=100, window_overlap=0, batch_size=256, hidden_size=16, heads=4, encoders=1),
     Hyperparameters("10", "../../dataset_preparation/evaluation/10", epochs=2000, window_size=100, window_overlap=0, batch_size=256, hidden_size=16, heads=4, encoders=1),
     Hyperparameters("20", "../../dataset_preparation/evaluation/20", epochs=1000, window_size=100, window_overlap=0, batch_size=256, hidden_size=16, heads=4, encoders=1),
+    Hyperparameters("30", "../../dataset_preparation/evaluation/30", epochs=1000, window_size=100, window_overlap=0, batch_size=256, hidden_size=16, heads=4, encoders=1),
+    Hyperparameters("40", "../../dataset_preparation/evaluation/40", epochs=1000, window_size=100, window_overlap=0, batch_size=256, hidden_size=16, heads=4, encoders=1),
     Hyperparameters("50", "../../dataset_preparation/evaluation/50", epochs=1000, window_size=100, window_overlap=0, batch_size=256, hidden_size=16, heads=4, encoders=1),
+    Hyperparameters("75", "../../dataset_preparation/evaluation/75", epochs=500, window_size=100, window_overlap=0, batch_size=256, hidden_size=16, heads=4, encoders=1),
     Hyperparameters("100", "../../dataset_preparation/evaluation/100", epochs=500, window_size=100, window_overlap=0, batch_size=256, hidden_size=16, heads=4, encoders=1),
     Hyperparameters("150", "../../dataset_preparation/evaluation/150", epochs=500, window_size=100, window_overlap=0, batch_size=256, hidden_size=16, heads=4, encoders=1),
     Hyperparameters("200", "../../dataset_preparation/evaluation/200", epochs=500, window_size=100, window_overlap=0, batch_size=256, hidden_size=16, heads=4, encoders=1),
     Hyperparameters("300", "../../dataset_preparation/evaluation/300", epochs=500, window_size=100, window_overlap=0, batch_size=256, hidden_size=16, heads=4, encoders=1),
     Hyperparameters("400", "../../dataset_preparation/evaluation/400", epochs=500, window_size=100, window_overlap=0, batch_size=256, hidden_size=16, heads=4, encoders=1),
     Hyperparameters("500", "../../dataset_preparation/evaluation/500", epochs=500, window_size=100, window_overlap=0, batch_size=256, hidden_size=16, heads=4, encoders=1),
+
+    Hyperparameters("50", "../../dataset_preparation/evaluation/50", epochs=400, window_size=150, window_overlap=0, batch_size=256, hidden_size=16, heads=4, encoders=1),
 ]
 
 
@@ -61,7 +66,7 @@ for hp in hyperparameter_combinations:
 
 
         # Evaluate: Extrapolation
-        transformer_encoder_only_extrapolation_x5.evaluate(model, transformer_encoder_only_training.model_name, directory, hp.batch_size, hp.window_size, hp.window_overlap, hp.dataset_directory)
-        print(f"Model evaluated: extrapolation")
+        # transformer_encoder_only_extrapolation_x5.evaluate(model, transformer_encoder_only_training.model_name, directory, hp.batch_size, hp.window_size, hp.window_overlap, hp.dataset_directory)
+        # print(f"Model evaluated: extrapolation")
         print(f"Model {directory} processed")
         print("===============================")
