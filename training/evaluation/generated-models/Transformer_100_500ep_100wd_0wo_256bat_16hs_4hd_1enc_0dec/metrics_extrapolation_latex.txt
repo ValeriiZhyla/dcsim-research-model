@@ -1,0 +1,18 @@
+\begin{table}[ht!]
+\centering
+\caption{Transformer: Extrapolation accuracy metrics}
+\label{table:TODO-PHASE-LABEL/transformer-extrapolation-metrics}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{c|c>{\columncolor{lightgray}}cc>{\columncolor{lightgray}}c}
+\hline
+%\rowcolor{white} % Keeps the header row white
+\textbf{Parameter} & \textbf{MSE} & \textbf{RMSE} & \textbf{MAE} & \textbf{R\textsuperscript{2}} \\
+\hline
+job\_start & 0.08469 & 0.29101 & 0.22253 & 0.91531 \\
+job\_end & 0.19554 & 0.4422 & 0.31286 & 0.80446 \\
+compute\_time & 0.0675 & 0.2598 & 0.15778 & 0.9325 \\
+input\_files\_transfer\_time & 1.59196 & 1.26173 & 0.54152 & -0.59196 \\
+output\_files\_transfer\_time & 1.24872 & 1.11746 & 0.46156 & -0.24872 \\
+\hline
+\end{tabular}
+\end{table}
