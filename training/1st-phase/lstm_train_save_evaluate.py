@@ -22,20 +22,22 @@ class Hyperparameters:
 
 
 hyperparameter_combinations = [
-    Hyperparameters(epochs=10, window_size=200, window_overlap=100, batch_size=128, hidden_size=8, layers=1),  # test
-    Hyperparameters(epochs=200, window_size=200, window_overlap=100, batch_size=128, hidden_size=8, layers=1),  # less layers
-    Hyperparameters(epochs=200, window_size=200, window_overlap=100, batch_size=128, hidden_size=50, layers=1),  # medium layers
-    Hyperparameters(epochs=200, window_size=200, window_overlap=100, batch_size=128, hidden_size=125, layers=1),  # more layers # good results
-    Hyperparameters(epochs=200, window_size=500, window_overlap=250, batch_size=128, hidden_size=125, layers=1),  # more layers, larger window
-    Hyperparameters(epochs=200, window_size=1000, window_overlap=500, batch_size=128, hidden_size=125, layers=1),  # more layers, giant window
+    # Hyperparameters(epochs=10, window_size=200, window_overlap=100, batch_size=128, hidden_size=8, layers=1),  # test
+    # Hyperparameters(epochs=200, window_size=200, window_overlap=100, batch_size=128, hidden_size=8, layers=1),  # less layers
+    # Hyperparameters(epochs=200, window_size=200, window_overlap=100, batch_size=128, hidden_size=50, layers=1),  # medium layers
+    # Hyperparameters(epochs=200, window_size=200, window_overlap=100, batch_size=128, hidden_size=125, layers=1),  # more layers # good results
+    # Hyperparameters(epochs=200, window_size=500, window_overlap=250, batch_size=128, hidden_size=125, layers=1),  # more layers, larger window
+    # Hyperparameters(epochs=200, window_size=1000, window_overlap=500, batch_size=128, hidden_size=125, layers=1),  # more layers, giant window
+    #
+    # Hyperparameters(epochs=200, window_size=100, window_overlap=50, batch_size=128, hidden_size=125, layers=1),  # more layers, smaller window
+    # Hyperparameters(epochs=200, window_size=50, window_overlap=40, batch_size=128, hidden_size=125, layers=1),  # more layers, smaller window
+    #
+    # Hyperparameters(epochs=50, window_size=100, window_overlap=80, batch_size=128, hidden_size=50, layers=1),  # Rolling window, medium layers
+    # Hyperparameters(epochs=50, window_size=100, window_overlap=80, batch_size=128, hidden_size=125, layers=1),  # Rolling window, more layers
+    #
+    # Hyperparameters(epochs=200, window_size=50, window_overlap=0, batch_size=128, hidden_size=125, layers=1),  # no overlap
 
-    Hyperparameters(epochs=200, window_size=100, window_overlap=50, batch_size=128, hidden_size=125, layers=1),  # more layers, smaller window
-    Hyperparameters(epochs=200, window_size=50, window_overlap=40, batch_size=128, hidden_size=125, layers=1),  # more layers, smaller window
-
-    Hyperparameters(epochs=50, window_size=100, window_overlap=80, batch_size=128, hidden_size=50, layers=1),  # Rolling window, medium layers
-    Hyperparameters(epochs=50, window_size=100, window_overlap=80, batch_size=128, hidden_size=125, layers=1),  # Rolling window, more layers
-
-    Hyperparameters(epochs=200, window_size=50, window_overlap=0, batch_size=128, hidden_size=125, layers=1),  # no overlap
+    Hyperparameters(epochs=100, window_size=50, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
 
 ]
 

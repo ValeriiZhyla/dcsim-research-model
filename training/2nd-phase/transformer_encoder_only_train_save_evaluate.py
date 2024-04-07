@@ -38,49 +38,49 @@ hyperparameter_combinations = [
     # Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=2, encoders=1),  # no overlap, one encoder
     # Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=2, encoders=4),  # no overlap, 4 encoders
 
-    # Check different hidden sizes
-    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=4, heads=1, encoders=1),
-    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=1), # <== Best hidden size is 8
-    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=16, heads=1, encoders=1),
-    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=32, heads=1, encoders=1),
-    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=64, heads=1, encoders=1),
-    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=128, heads=1, encoders=1),
-
-    # Check different batch sizes
-    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=32, hidden_size=8, heads=1, encoders=1),
-    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=64, hidden_size=8, heads=1, encoders=1),
-    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=1),  # <== Best batch size is 128
-    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=256, hidden_size=8, heads=1, encoders=1),
-    Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=512, hidden_size=8, heads=1, encoders=1),
-
-    # Check different encoders
-    Hyperparameters(epochs=500, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=1), # <== Best encoders is 1
-    Hyperparameters(epochs=500, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=2),
-    Hyperparameters(epochs=500, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=4),
-    Hyperparameters(epochs=500, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=8),
-
-    # Check different heads
-    Hyperparameters(epochs=550, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=1),
-    Hyperparameters(epochs=550, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=2, encoders=1),
-    Hyperparameters(epochs=550, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=4, encoders=1), # <== Best heads is 4
-    Hyperparameters(epochs=550, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=8, encoders=1),
-
-    # Check different window sizes
-    Hyperparameters(epochs=550, window_size=50, window_overlap=0, batch_size=128, hidden_size=8, heads=4, encoders=1),
-    Hyperparameters(epochs=550, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=4, encoders=1),  # <== Best window size is 100
-    Hyperparameters(epochs=550, window_size=150, window_overlap=0, batch_size=128, hidden_size=8, heads=4, encoders=1),
-
-    # Check different window overlaps
-    Hyperparameters(epochs=250, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=4, encoders=1),
-    Hyperparameters(epochs=250, window_size=100, window_overlap=10, batch_size=128, hidden_size=8, heads=4, encoders=1),
-    Hyperparameters(epochs=250, window_size=100, window_overlap=20, batch_size=128, hidden_size=8, heads=4, encoders=1),
-    Hyperparameters(epochs=250, window_size=100, window_overlap=30, batch_size=128, hidden_size=8, heads=4, encoders=1), # <== Best window overlap is 30 so far
-    Hyperparameters(epochs=250, window_size=100, window_overlap=40, batch_size=128, hidden_size=8, heads=4, encoders=1),
-    Hyperparameters(epochs=250, window_size=100, window_overlap=50, batch_size=128, hidden_size=8, heads=4, encoders=1),
-    Hyperparameters(epochs=250, window_size=100, window_overlap=60, batch_size=128, hidden_size=8, heads=4, encoders=1),
+    # # Check different hidden sizes
+    # Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=4, heads=1, encoders=1),
+    # Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=1), # <== Best hidden size is 8
+    # Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=16, heads=1, encoders=1),
+    # Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=32, heads=1, encoders=1),
+    # Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=64, heads=1, encoders=1),
+    # Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=128, heads=1, encoders=1),
+    #
+    # # Check different batch sizes
+    # Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=32, hidden_size=8, heads=1, encoders=1),
+    # Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=64, hidden_size=8, heads=1, encoders=1),
+    # Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=1),  # <== Best batch size is 128
+    # Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=256, hidden_size=8, heads=1, encoders=1),
+    # Hyperparameters(epochs=300, window_size=100, window_overlap=0, batch_size=512, hidden_size=8, heads=1, encoders=1),
+    #
+    # # Check different encoders
+    # Hyperparameters(epochs=500, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=1), # <== Best encoders is 1
+    # Hyperparameters(epochs=500, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=2),
+    # Hyperparameters(epochs=500, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=4),
+    # Hyperparameters(epochs=500, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=8),
+    #
+    # # Check different heads
+    # Hyperparameters(epochs=550, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=1),
+    # Hyperparameters(epochs=550, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=2, encoders=1),
+    # Hyperparameters(epochs=550, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=4, encoders=1), # <== Best heads is 4
+    # Hyperparameters(epochs=550, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=8, encoders=1),
+    #
+    # # Check different window sizes
+    # Hyperparameters(epochs=550, window_size=50, window_overlap=0, batch_size=128, hidden_size=8, heads=4, encoders=1),
+    # Hyperparameters(epochs=550, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=4, encoders=1),  # <== Best window size is 100
+    # Hyperparameters(epochs=550, window_size=150, window_overlap=0, batch_size=128, hidden_size=8, heads=4, encoders=1),
+    #
+    # # Check different window overlaps
+    # Hyperparameters(epochs=250, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=4, encoders=1),
+    # Hyperparameters(epochs=250, window_size=100, window_overlap=10, batch_size=128, hidden_size=8, heads=4, encoders=1),
+    # Hyperparameters(epochs=250, window_size=100, window_overlap=20, batch_size=128, hidden_size=8, heads=4, encoders=1),
+    # Hyperparameters(epochs=250, window_size=100, window_overlap=30, batch_size=128, hidden_size=8, heads=4, encoders=1), # <== Best window overlap is 30 so far
+    # Hyperparameters(epochs=250, window_size=100, window_overlap=40, batch_size=128, hidden_size=8, heads=4, encoders=1),
+    # Hyperparameters(epochs=250, window_size=100, window_overlap=50, batch_size=128, hidden_size=8, heads=4, encoders=1),
+    # Hyperparameters(epochs=250, window_size=100, window_overlap=60, batch_size=128, hidden_size=8, heads=4, encoders=1),
 
     # Best model:     Hyperparameters(epochs=250, window_size=100, window_overlap=30, batch_size=128, hidden_size=8, heads=4, encoders=1), but no huge difference compared to 0 overlap, 1.5% of R2
-
+    Hyperparameters(epochs=101, window_size=100, window_overlap=30, batch_size=128, hidden_size=8, heads=4, encoders=1)
 ]
 
 

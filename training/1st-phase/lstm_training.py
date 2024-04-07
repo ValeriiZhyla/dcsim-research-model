@@ -12,7 +12,7 @@ WINDOW_SIZE = 200
 WINDOW_OVERLAP_SIZE = 100
 BATCH_SIZE = 128
 HIDDEN_SIZE = 125
-INPUT_SIZE = 6
+INPUT_SIZE = 5
 OUTPUT_SIZE = 5
 LAYERS = 1
 
@@ -41,7 +41,7 @@ TEST_PATH = '../../dataset_preparation/1st-phase/test_dataset.csv'
 # TRAIN_PATH = '../../dataset_preparation/1st-phase/train_dataset_small.csv'
 # TEST_PATH = '../../dataset_preparation/1st-phase/test_dataset_small.csv'
 
-input_columns = ['simulation_id_int', 'simulation_length', 'index', 'flops', 'input_files_size', 'output_files_size']
+input_columns = ['simulation_length', 'index', 'flops', 'input_files_size', 'output_files_size']
 output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
 
 def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size, hidden_size, layers):

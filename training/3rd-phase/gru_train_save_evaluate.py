@@ -22,55 +22,56 @@ class Hyperparameters:
 
 
 hyperparameter_combinations = [
-    Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=16, layers=1),  # test
-
-
-    # Check different hidden sizes
-    Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, layers=1),
-    Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=10, layers=1),
-    Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=12, layers=1),
-    Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=16, layers=1),
-    Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=20, layers=1),
-    Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=32, layers=1),
-    Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=64, layers=1),
-    Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=96, layers=1),
-    Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=128, layers=1), # 128 hl is the best
-    Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=160, layers=1),
-    Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=192, layers=1),
-    Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=256, layers=1),
-
-    # Check different window sizes
-    Hyperparameters(epochs=200, window_size=25, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
-    Hyperparameters(epochs=200, window_size=50, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
-    Hyperparameters(epochs=200, window_size=75, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
-    Hyperparameters(epochs=200, window_size=100, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
-    Hyperparameters(epochs=200, window_size=125, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
-    Hyperparameters(epochs=200, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=1), # 150 showed the best result
-    Hyperparameters(epochs=200, window_size=200, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
-    Hyperparameters(epochs=200, window_size=250, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
-    Hyperparameters(epochs=200, window_size=300, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
-
-    # Check different window overlaps
-    Hyperparameters(epochs=210, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=1), # all are ok, proceed with 0
-    Hyperparameters(epochs=210, window_size=150, window_overlap=10, batch_size=128, hidden_size=128, layers=1),
-    Hyperparameters(epochs=210, window_size=150, window_overlap=20, batch_size=128, hidden_size=128, layers=1),
-    Hyperparameters(epochs=210, window_size=150, window_overlap=30, batch_size=128, hidden_size=128, layers=1),
-    Hyperparameters(epochs=210, window_size=150, window_overlap=40, batch_size=128, hidden_size=128, layers=1),
-    Hyperparameters(epochs=210, window_size=150, window_overlap=50, batch_size=128, hidden_size=128, layers=1),
-
-    # Check different layers
-    Hyperparameters(epochs=220, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=1), # 1 layer is similar to 2 layers
-    Hyperparameters(epochs=220, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=2),
-    Hyperparameters(epochs=220, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=4),
-    Hyperparameters(epochs=220, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=8),
-
-    # Check different batch sizes
-    Hyperparameters(epochs=230, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1), # 64 is the best
-    Hyperparameters(epochs=230, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
-    Hyperparameters(epochs=230, window_size=150, window_overlap=0, batch_size=256, hidden_size=128, layers=1),
-    Hyperparameters(epochs=230, window_size=150, window_overlap=0, batch_size=512, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=16, layers=1),  # test
+    #
+    #
+    # # Check different hidden sizes
+    # Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, layers=1),
+    # Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=10, layers=1),
+    # Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=12, layers=1),
+    # Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=16, layers=1),
+    # Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=20, layers=1),
+    # Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=32, layers=1),
+    # Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=64, layers=1),
+    # Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=96, layers=1),
+    # Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=128, layers=1), # 128 hl is the best
+    # Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=160, layers=1),
+    # Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=192, layers=1),
+    # Hyperparameters(epochs=150, window_size=100, window_overlap=0, batch_size=128, hidden_size=256, layers=1),
+    #
+    # # Check different window sizes
+    # Hyperparameters(epochs=200, window_size=25, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=200, window_size=50, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=200, window_size=75, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=200, window_size=100, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=200, window_size=125, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=200, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=1), # 150 showed the best result
+    # Hyperparameters(epochs=200, window_size=200, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=200, window_size=250, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=200, window_size=300, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
+    #
+    # # Check different window overlaps
+    # Hyperparameters(epochs=210, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=1), # all are ok, proceed with 0
+    # Hyperparameters(epochs=210, window_size=150, window_overlap=10, batch_size=128, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=210, window_size=150, window_overlap=20, batch_size=128, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=210, window_size=150, window_overlap=30, batch_size=128, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=210, window_size=150, window_overlap=40, batch_size=128, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=210, window_size=150, window_overlap=50, batch_size=128, hidden_size=128, layers=1),
+    #
+    # # Check different layers
+    # Hyperparameters(epochs=220, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=1), # 1 layer is similar to 2 layers
+    # Hyperparameters(epochs=220, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=2),
+    # Hyperparameters(epochs=220, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=4),
+    # Hyperparameters(epochs=220, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=8),
+    #
+    # # Check different batch sizes
+    # Hyperparameters(epochs=230, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1), # 64 is the best
+    # Hyperparameters(epochs=230, window_size=150, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=230, window_size=150, window_overlap=0, batch_size=256, hidden_size=128, layers=1),
+    # Hyperparameters(epochs=230, window_size=150, window_overlap=0, batch_size=512, hidden_size=128, layers=1),
 
     #     Hyperparameters(epochs=230, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1), is the best
+    Hyperparameters(epochs=101, window_size=150, window_overlap=0, batch_size=64, hidden_size=128, layers=1)
 ]
 
 

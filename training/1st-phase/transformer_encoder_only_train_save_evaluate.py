@@ -34,16 +34,16 @@ hyperparameter_combinations = [
     # Hyperparameters(epochs=100, window_size=100, window_overlap=50, batch_size=128, hidden_size=100, heads=2, encoders=2),  # more layers, smaller window
     # Hyperparameters(epochs=100, window_size=50, window_overlap=40, batch_size=128, hidden_size=100, heads=2, encoders=2),  # more layers, even smaller window
 
-    Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=2, encoders=2), # no overlap
-    Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=2, encoders=1),  # no overlap, one encoder
-    Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=2, encoders=4),  # no overlap, 4 encoders
-
-    Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=2),  # no overlap, 1 head
+    # Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=2, encoders=2), # no overlap
+    # Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=2, encoders=1),  # no overlap, one encoder
+    # Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=2, encoders=4),  # no overlap, 4 encoders
+    #
+    # Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=2),  # no overlap, 1 head
+    # Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=1),  # no overlap, one encoder, 1 head
+    # Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=4),  # no overlap, 4 encoders, 1 head
+    #
+    # Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=128, heads=1, encoders=1),  # no overlap, one encoder, 1 head
     Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=1),  # no overlap, one encoder, 1 head
-    Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=8, heads=1, encoders=4),  # no overlap, 4 encoders, 1 head
-
-    Hyperparameters(epochs=100, window_size=100, window_overlap=0, batch_size=128, hidden_size=128, heads=1, encoders=1),  # no overlap, one encoder, 1 head
-
 ]
 
 for hp in hyperparameter_combinations:

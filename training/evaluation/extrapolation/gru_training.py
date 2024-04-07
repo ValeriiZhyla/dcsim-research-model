@@ -1,3 +1,4 @@
+import os.path
 import time
 
 import seaborn
@@ -19,7 +20,6 @@ LAYERS = 1
 model_name = "GRU"
 plot_color = seaborn.color_palette("deep")[0]  # deep blue
 
-
 # Define the GRU Model
 class BiGRUModel(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, num_layers):
@@ -36,14 +36,15 @@ class BiGRUModel(nn.Module):
         return out
 
 
-TRAIN_PATH = '../../dataset_preparation/2nd-phase/train_dataset.csv'
-TEST_PATH = '../../dataset_preparation/2nd-phase/test_dataset.csv'
+TRAIN_FILE_NAME = 'train_dataset.csv'
 
+# input_columns = ['simulation_length', 'index']
+# input_columns = ['simulation_id_int', 'simulation_length', 'index', 'flops', 'input_files_size', 'output_files_size']
 input_columns = ['simulation_length', 'index', 'flops', 'input_files_size', 'output_files_size']
 output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
 
 
-def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size, hidden_size, layers):
+def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size, hidden_size, layers, dataset_directory):
     # Define the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
@@ -52,7 +53,7 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
     start_time = time.time()
 
     # Load data and scalers
-    train_loader, train_scalers, test_loader, test_scalers = commons.load_data(TRAIN_PATH, TEST_PATH, input_columns, output_columns, batch_size, window_size, window_overlap)
+    train_loader, train_scalers = commons.load_train_data(os.path.join(dataset_directory, TRAIN_FILE_NAME), input_columns, output_columns, batch_size, window_size, window_overlap)
 
     # Initialize the model, loss function, and optimizer
     model = BiGRUModel(input_size=INPUT_SIZE, hidden_size=hidden_size, output_size=OUTPUT_SIZE, num_layers=layers).to(device)
@@ -86,6 +87,6 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
 
 
 if __name__ == '__main__':
-    model = train_and_evaluate_model(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_SIZE, LAYERS)
+    model = train_and_evaluate_model(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_SIZE, LAYERS, "")
     torch.save(model.state_dict(), 'generated-models/default/gru_weights.pth')
     torch.save(model, 'generated-models/default/gru.pth')

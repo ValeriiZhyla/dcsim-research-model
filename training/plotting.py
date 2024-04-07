@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import seaborn
 from matplotlib import pyplot as plt
+from matplotlib.lines import Line2D
 
 
 def denorm_and_plot_predicted_actual(output_columns, output_scalers, predictions_array, actual_values_array, model_name, results_directory, max_points=1000000, color_name="blue",
@@ -43,6 +44,8 @@ def denorm_and_plot_predicted_actual(output_columns, output_scalers, predictions
         plot.set_xlabel(plot.get_xlabel(), fontdict={'weight': 'bold'}, labelpad=15, fontsize=16),
         plot.set_ylabel(plot.get_ylabel(), fontdict={'weight': 'bold'}, labelpad=15, fontsize=16)
 
+        plot.tick_params(axis='both', which='major', labelsize=14)
+
         plots_directory = os.path.join(results_directory, os.path.join("plots", os.path.join("accuracy", purpose)))
         if not os.path.exists(plots_directory):
             os.makedirs(plots_directory)
@@ -65,7 +68,12 @@ def denorm_and_plot_predicted_actual(output_columns, output_scalers, predictions
             ax.set_xlim(xlim)
             ax.set_ylim(ylim)
             # Add legend to the plot
-            plt.legend(fontsize='x-large')
+
+        legend_elements = [
+            Line2D([0], [0], marker='o', color='w', markerfacecolor=color_name, markersize=10, alpha=1, label='Model Predictions'),
+            Line2D([0], [0], color='#808080', alpha=0.75, label='Ideal Prediction')
+        ]
+        plt.legend(handles=legend_elements, fontsize='x-large')
 
         plt.savefig(file_name, dpi=200, bbox_inches='tight', format='png')
         plt.show()
@@ -94,6 +102,8 @@ def plot_kde(output_columns, predictions_array, actual_values_array, model_name,
         plt.title(f'{label} [{model_name}]', fontweight='bold', fontsize=16)
         plt.xlabel('Values', fontweight='bold', fontsize=16)
         plt.ylabel('Density', fontweight='bold', fontsize=16)
+
+        plt.tick_params(axis='both', which='major', labelsize=14)
 
         # Add legend
         plt.legend(fontsize='x-large')
