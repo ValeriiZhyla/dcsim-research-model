@@ -37,6 +37,9 @@ hyperparameter_combinations = [
     # Hyperparameters(epochs=200, window_size=50, window_overlap=0, batch_size=128, hidden_size=16, layers=1)  # Rolling window, but larger
     Hyperparameters(epochs=50, window_size=50, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
 
+    Hyperparameters(epochs=50, window_size=50, window_overlap=0, batch_size=128, hidden_size=128, layers=2),
+    Hyperparameters(epochs=50, window_size=50, window_overlap=0, batch_size=128, hidden_size=128, layers=4),
+
 ]
 for hp in hyperparameter_combinations:
     if commons.directory_name_with_hyperparameters_already_exists(gru_training.model_name, hp.epochs, hp.window_size, hp.window_overlap, hp.batch_size, hp.hidden_size, layers=hp.layers):

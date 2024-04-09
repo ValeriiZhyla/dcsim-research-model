@@ -127,6 +127,34 @@ def get_simulation(simulation_id, table_simulated_jobs="simulated_jobs"):
 
     return df_sorted
 
+def get_simulations_by_id(simulation_id_list, table_simulated_jobs="simulated_jobs"):
+
+    # Establish the database connection
+    conn = establish_database_connection()
+
+    # Read dataset
+    query = (
+        f"SELECT simulation_id, position_in_batch, tag, machine_name, hit_rate, job_start, job_end, compute_time, flops, input_files_transfer_time, input_files_size, output_files_transfer_time, output_files_size "
+        f"FROM {table_simulated_jobs};")
+    print("Query:", query)
+
+    df_all = pd.read_sql_query(query, conn)
+
+    df_all = df_all[df_all['simulation_id'].isin(simulation_id_list)]
+
+    # Sort entries by id and start time
+    df_sorted = df_all.sort_values(by=['simulation_id', 'job_start'])
+
+    # Add an index within each simulation group
+    df_sorted['index'] = df_sorted.groupby('simulation_id').cumcount() + 1
+
+    # Count the number of simulations for each simulation_id
+    df_sorted['simulation_length'] = df_sorted.groupby('simulation_id')['simulation_id'].transform('count')
+
+    # Close the database connection
+    conn.close()
+
+    return df_sorted
 
 def add_simulation_id_integer(df):
     simulations_ids = get_all_unique_simulation_ids(df)

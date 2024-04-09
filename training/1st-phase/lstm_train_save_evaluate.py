@@ -39,6 +39,9 @@ hyperparameter_combinations = [
 
     Hyperparameters(epochs=100, window_size=50, window_overlap=0, batch_size=128, hidden_size=128, layers=1),
 
+    Hyperparameters(epochs=100, window_size=50, window_overlap=0, batch_size=128, hidden_size=128, layers=2),
+    Hyperparameters(epochs=40, window_size=50, window_overlap=0, batch_size=128, hidden_size=128, layers=4),
+
 ]
 
 for hp in hyperparameter_combinations:
