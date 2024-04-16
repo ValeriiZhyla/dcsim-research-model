@@ -1,25 +1,19 @@
 import os
 import time
 
-import numpy as np
-import pandas as pd
 import seaborn
 import torch
 import torch.nn as nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-from torch.utils.data import DataLoader
-
-import windowing
 from training import commons
-import scenarios
 
 # Constants
-NUM_EPOCHS = 100
-WINDOW_SIZE = 150
-WINDOW_OVERLAP_SIZE = 0
+NUM_EPOCHS = 200
+WINDOW_SIZE = 200
+WINDOW_OVERLAP_SIZE = 100
 BATCH_SIZE = 128
-HIDDEN_SIZE = 128
-INPUT_SIZE = 22
+HIDDEN_SIZE = 125
+INPUT_SIZE = 5
 OUTPUT_SIZE = 5
 LAYERS = 1
 
@@ -43,22 +37,25 @@ class BiLSTMModel(nn.Module):
         return out
 
 
-def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size, hidden_size, layers):
+TRAIN_FILE_NAME = 'train_dataset.csv'
+
+
+# input_columns = ['simulation_length', 'index']
+# input_columns = ['simulation_id_int', 'simulation_length', 'index', 'flops', 'input_files_size', 'output_files_size']
+input_columns = ['simulation_length', 'index', 'flops', 'input_files_size', 'output_files_size']
+output_columns = ['job_start', 'job_end', 'compute_time', 'input_files_transfer_time', 'output_files_transfer_time']
+
+
+def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size, hidden_size, layers, dataset_directory):
     # Define the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
 
     # Start timer
     start_time = time.time()
-    scenario = scenarios.main_scenario
 
-    train_loader, train_scalers = commons.load_data_with_platform_information(
-        scenario.train_dataset_path, scenario.nodes_aux_path, scenario.links_aux_path,
-        scenarios.input_columns_jobs_numerical, scenarios.input_columns_jobs_categorical,
-        scenarios.output_columns_jobs_numerical, scenarios.output_columns_jobs_categorical,
-        scenarios.nodes_columns_numerical, scenarios.nodes_columns_categorical,
-        scenarios.links_columns_numerical, scenarios.links_columns_categorical,
-        window_size, window_overlap, batch_size, do_shuffle=True)
+    # Load data and scalers
+    train_loader, train_scalers = commons.load_train_data(os.path.join(dataset_directory, TRAIN_FILE_NAME), input_columns, output_columns, batch_size, window_size, window_overlap)
 
     # Initialize the model, loss function, and optimizer
     model = BiLSTMModel(input_size=INPUT_SIZE, hidden_size=hidden_size, output_size=OUTPUT_SIZE, num_layers=layers).to(device)
@@ -92,8 +89,6 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
 
 
 if __name__ == '__main__':
-    model = train_and_evaluate_model(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_SIZE, LAYERS)
-    dir = f"generated-models/{model_name}_{LAYERS}layer_{HIDDEN_SIZE}hs"
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-    torch.save(model, f"{dir}/lstm_base.pth")
+    model = train_and_evaluate_model(NUM_EPOCHS, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_SIZE, LAYERS, "")
+    torch.save(model.state_dict(), 'generated-models/default/lstm_weights.pth')
+    torch.save(model, 'generated-models/default/lstm.pth')

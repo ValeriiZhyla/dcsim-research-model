@@ -9,12 +9,12 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 
 import windowing
-from lstm_training_main import BiLSTMModel, LAYERS, HIDDEN_SIZE, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE
+from gru_training_main import BiGRUModel, LAYERS, HIDDEN_SIZE, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE
 from training import commons
 import scenarios
 
-model_name = "LSTM"
-plot_color = seaborn.color_palette("deep")[1]  # deep orange
+model_name = "GRU"
+plot_color = seaborn.color_palette("deep")[0]  # deep blue
 
 # Constants
 NUM_EPOCHS_ON_EACH_SCENARIO = 50
@@ -22,7 +22,7 @@ NUM_ITERATIONS_OVER_ALL_SCENARIOS = 3
 
 
 
-def train_and_evaluate_model(base_model: BiLSTMModel, window_size, window_overlap, batch_size, hidden_size, layers):
+def train_and_evaluate_model(base_model: BiGRUModel, window_size, window_overlap, batch_size, hidden_size, layers):
     # Define the device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
@@ -76,6 +76,6 @@ def train_and_evaluate_model(base_model: BiLSTMModel, window_size, window_overla
 
 if __name__ == '__main__':
     dir = f"generated-models/{model_name}_{LAYERS}layer_{HIDDEN_SIZE}hs"
-    base_model: BiLSTMModel = torch.load(f'{dir}/lstm_base.pth')
+    base_model: BiGRUModel = torch.load(f'{dir}/gru_base.pth')
     trained_model = train_and_evaluate_model(base_model, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, HIDDEN_SIZE, LAYERS)
-    torch.save(trained_model, f'{dir}/lstm_tuned_{NUM_EPOCHS_ON_EACH_SCENARIO}each_{NUM_ITERATIONS_OVER_ALL_SCENARIOS}iter.pth')
+    torch.save(trained_model, f'{dir}/gru_tuned_{NUM_EPOCHS_ON_EACH_SCENARIO}each_{NUM_ITERATIONS_OVER_ALL_SCENARIOS}iter.pth')

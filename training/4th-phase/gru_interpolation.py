@@ -1,16 +1,16 @@
 import torch
 
 import apply_model
-from lstm_training_main import BiLSTMModel, model_name, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE, plot_color
+from gru_training_main import BiGRUModel, plot_color, model_name, LAYERS, HIDDEN_SIZE, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, BATCH_SIZE
 import scenarios
 
 purpose = "interpolation"
 
-#MODEL_PATH = "generated-models/LSTM_1layer_128hs/lstm_base.pth"
-#PLOTS_PATH = "generated-models/LSTM_1layer_128hs/base/plots-0-main"
+# MODEL_PATH = "generated-models/GRU_1layer_128hs/gru_base.pth"
+# PLOTS_PATH = "generated-models/GRU_1layer_128hs/base/plots-0-main"
 
-MODEL_PATH = "generated-models/LSTM_1layer_128hs/lstm_tuned_50each_3iter.pth"
-PLOTS_PATH = "generated-models/LSTM_1layer_128hs/tuned/plots-0-main"
+MODEL_PATH = "generated-models/GRU_1layer_128hs/gru_tuned_50each_3iter.pth"
+PLOTS_PATH = "generated-models/GRU_1layer_128hs/tuned/plots-0-main"
 
 
 
@@ -26,5 +26,5 @@ def evaluate(model, model_name, results_directory, batch_size, window_size, wind
 
 
 if __name__ == '__main__':
-    model: BiLSTMModel = torch.load(MODEL_PATH)
+    model: BiGRUModel = torch.load(MODEL_PATH)
     evaluate(model, model_name, PLOTS_PATH, BATCH_SIZE, WINDOW_SIZE, WINDOW_OVERLAP_SIZE, scenarios.main_scenario)

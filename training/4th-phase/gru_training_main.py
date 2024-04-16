@@ -23,20 +23,20 @@ INPUT_SIZE = 22
 OUTPUT_SIZE = 5
 LAYERS = 1
 
-model_name = "LSTM"
-plot_color = seaborn.color_palette("deep")[1]  # deep orange
+model_name = "GRU"
+plot_color = seaborn.color_palette("deep")[0]  # deep blue
 
 
-# Define the LSTM Model
-class BiLSTMModel(nn.Module):
+# Define the GRU Model
+class BiGRUModel(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, num_layers):
-        super(BiLSTMModel, self).__init__()
-        self.lstm = nn.LSTM(input_size, hidden_size, num_layers=num_layers, batch_first=True, bidirectional=True)
+        super(BiGRUModel, self).__init__()
+        self.gru = nn.GRU(input_size, hidden_size, num_layers=num_layers, batch_first=True, bidirectional=True)
         self.fc = nn.Linear(hidden_size * 2, output_size)  # Multiply by 2 for bidirectional
 
     def forward(self, x):
-        # LSTM layer
-        out, _ = self.lstm(x)  # out shape: [batch_size, sequence_length, hidden_size * 2]
+        # GRU layer
+        out, _ = self.gru(x)  # out shape: [batch_size, sequence_length, hidden_size * 2]
 
         # Apply the linear layer to each time step
         out = self.fc(out)  # out shape: [batch_size, sequence_length, output_size]
@@ -61,7 +61,7 @@ def train_and_evaluate_model(num_epochs, window_size, window_overlap, batch_size
         window_size, window_overlap, batch_size, do_shuffle=True)
 
     # Initialize the model, loss function, and optimizer
-    model = BiLSTMModel(input_size=INPUT_SIZE, hidden_size=hidden_size, output_size=OUTPUT_SIZE, num_layers=layers).to(device)
+    model = BiGRUModel(input_size=INPUT_SIZE, hidden_size=hidden_size, output_size=OUTPUT_SIZE, num_layers=layers).to(device)
 
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
@@ -96,4 +96,4 @@ if __name__ == '__main__':
     dir = f"generated-models/{model_name}_{LAYERS}layer_{HIDDEN_SIZE}hs"
     if not os.path.exists(dir):
         os.makedirs(dir)
-    torch.save(model, f"{dir}/lstm_base.pth")
+    torch.save(model, f"{dir}/gru_base.pth")
