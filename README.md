@@ -17,7 +17,6 @@ The tool is designed to run autonomously, managing the complete cycle of filling
 This tool is designed to be compatible with nohup (no hang-up), which allows users to start the tool and log out of the system, with the assurance that the simulations will continue running uninterrupted.
 
 
-
 ### Dataset Preparation
 [extract-simulations.py](simulation-results-etl%2Fextract-simulations.py) reads the directories created by the start-simulations.py script. 
 Each directory contains the input and output files of individual DCSim simulations and simulation execution metadata, such as CPU time and used memory. 
@@ -34,9 +33,11 @@ It is used by scripts like [3rd-phase/prepare-dataset.py](dataset_preparation%2F
 The replication dataset with a PostgreSQL dump is available at https://zenodo.org/records/10977016. 
 Scripts in [dataset_preparation](dataset_preparation) are used to generate different training and test datasets from the PostgreSQL database. 
 
-
 ### Model Training
-TODO
+Directory [training](training) contains models for 4 phases (called scenarios in the thesis), scripts used for evaluation, and a common scrips for plotting, windowing, metrics calculation etc.
+For each model type, a "train-save-evaluate" scripts is created, which can be used to train models with different hyperparameter combinations.
+In this work, we used BiLSTM, BiGRU und Encoder-Only Transformer models.
+Models are evaluated in interpolation (sequences of the same lengths) and extrapolation (sequences of the unseen lengths) tasks.
 
 ## Pytorch
 For pytorch installation with pip and CUDA support use for Windows 11
