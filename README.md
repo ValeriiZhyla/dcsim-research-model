@@ -1,4 +1,5 @@
 # dcsim-research-model
+This repository contains the scripts for [DCSim](https://github.com/HEPCompSim/DCSim) simulation scheduling using Slurm Workload Manager and data preparation for my master's thesis "Performance Modeling of Distributed Computing".
 
 ## Scripts
 ### Data Generation
