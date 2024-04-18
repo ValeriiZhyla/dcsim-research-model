@@ -25,14 +25,15 @@ At first, this tool performs consistency checks on the simulation results.
 Upon successful validation, the tool proceeds to write the processed data into a designated database. 
 Each simulation is identified by its UUID.
 
+### Replication Dataset
+The replication dataset with a PostgreSQL dump is available at https://zenodo.org/records/10977016. 
+Scripts in [dataset_preparation](dataset_preparation) are used to generate different training and test datasets from the PostgreSQL database. 
+
 [prepare-dataset-commons.py](dataset_preparation%2Fprepare-dataset-commons.py) contains the common methods for export of the data from the database in CSV files, that will be used for model training and evaluation. 
 This script also can enhance the dataset by adding extra features. 
 Each simulation is grouped based on its unique UUID and ordered according to the job start time. 
 It is used by scripts like [3rd-phase/prepare-dataset.py](dataset_preparation%2F3rd-phase%2Fprepare-dataset.py) in each use case.
 
-### Replication Dataset
-The replication dataset with a PostgreSQL dump is available at https://zenodo.org/records/10977016. 
-Scripts in [dataset_preparation](dataset_preparation) are used to generate different training and test datasets from the PostgreSQL database. 
 
 ### Model Training
 Directory [training](training) contains models for 4 phases (called scenarios in the thesis), scripts used for evaluation, and a common scrips for plotting, windowing, metrics calculation etc.
